@@ -1,0 +1,38 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "test": "jest",
+    "build": "webpack --mode production",
+    "lint": "eslint .",
+    "prepare": "husky install"
+  },
+  "imports": {
+    "#controllers/*": "./src/controllers/*",
+    "#routes/*": "./src/routes/*",
+    "#models/*": "./src/models/*",
+    "#config/*": "./src/config/*"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jest": "^30.2.0",
+    "module-alias": "^2.2.3",
+    "mongoose": "^9.0.0",
+    "nodemon": "^3.1.11",
+    "package-json-path": "^1.0.10",
+    "paths": "^0.1.1"
+  }
+}
