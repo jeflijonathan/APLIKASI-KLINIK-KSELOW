@@ -1,4 +1,4 @@
-import Pasien from "#models/pasien.model.js";
+import pasienSchema from "#models/pasien.model.js";
 class PasienController {
   static async getAllPasien(req, res) {
     try {
@@ -13,9 +13,10 @@ class PasienController {
         filter.nama = { $regex: search, $options: "i" };
       }
 
-      const totalData = await Pasien.countDocuments(filter);
+      const totalData = await pasienSchema.countDocuments(filter);
 
-      const data = await Pasien.find(filter)
+      const data = await pasienSchema
+        .find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
         .sort({ nama: 1 });
@@ -52,7 +53,7 @@ class PasienController {
     try {
       const { id } = req.params;
 
-      const pasien = await Pasien.findById(id);
+      const pasien = await pasienSchema.findById(id);
 
       if (!pasien) {
         return res.json({
@@ -82,43 +83,66 @@ class PasienController {
     try {
       const { nama, tanggal_lahir, jenis_kelamin, asuransi } = req.body;
       let errorDetails = [];
-
-      if (!nama || nama == "") {
+      if (!nama || nama === "") {
         errorDetails.push("nama is Required");
       }
 
-      if (!tanggal || tanggal_lahir == "") {
-        errorDetails.push("nama is Required");
+      if (!tanggal_lahir || tanggal_lahir === "") {
+        errorDetails.push("tanggal_lahir is Required"); // PERBAIKAN TYPO
       }
 
-      if (errorDetails) {
-        throw {
+      // Anda juga harus memvalidasi jenis_kelamin dan asuransi
+      if (!jenis_kelamin || jenis_kelamin === "") {
+        errorDetails.push("jenis_kelamin is Required");
+      }
+
+      if (!asuransi || asuransi === "") {
+        errorDetails.push("asuransi is Required");
+      }
+
+      // PERBAIKAN: Cek jika array memiliki item (panjang > 0)
+      if (errorDetails.length > 0) {
+        return res.status(400).json({
+          // Lebih baik mengembalikan respons langsung di sini
+          status: false,
           statusCode: 400,
           message: "Bad Request",
           details: errorDetails,
-        };
+        });
       }
 
-      const pasien = new Pasien({
+      const pasien = new pasienSchema({
         nama,
         tanggal_lahir,
         jenis_kelamin,
         asuransi,
       });
 
-      const savedPasien = await pasien.save();
+      await pasien.save();
 
-      res.json({
+      res.status(201).json({
         status: true,
         statusCode: 201,
         message: "Successfully created pasien",
-        data: savedPasien,
+        data: pasien,
       });
     } catch (err) {
-      res.json({
+      console.error(err);
+      let statusCode = 500;
+      let message = "Failed to create pasien";
+
+      if (err.name === "ValidationError") {
+        statusCode = 400;
+        message = err.message;
+      } else if (err.statusCode) {
+        statusCode = err.statusCode;
+        message = err.message;
+      }
+
+      res.status(statusCode).json({
         status: false,
-        statusCode: 400,
-        message: "Failed to create pasien",
+        statusCode: statusCode,
+        message: message,
       });
     }
   }
