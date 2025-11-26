@@ -1,9 +1,268 @@
-import users from "#models/user.model.js";
+import User from "#models/user.model.js";
+import bcrypt from "bcryptjs";
 
 class UserController {
-  static getAllUsers(req, res) {
-    // return all users
-    res.json(users);
+  // Register
+  static async register(req, res) {
+    try {
+      const { username, email, password, role } = req.body;
+      const errors = [];
+      if (!username) errors.push("username is required");
+      if (!email) errors.push("email is required");
+      if (!password) errors.push("password is required");
+      if (!role) errors.push("role is required");
+
+      if (errors.length > 0) {
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "Bad Request",
+          details: errors,
+        });
+      }
+
+      // Cek duplikasi
+      const existingUser = await User.findOne({
+        $or: [{ username }, { email }],
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "Username or Email already registered",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = await User.create({
+        username,
+        email,
+        password: hashedPassword,
+        role,
+      });
+
+      return res.status(201).json({
+        status: true,
+        statusCode: 201,
+        message: `akun berhasil dibuat sebagai ${role}`,
+        data: {
+          id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+          role: newUser.role,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
+  }
+
+  // login user
+  static async login(req, res) {
+    try {
+      const { identifier, password } = req.body;
+      // login = username / email
+
+      if (!identifier || !password) {
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "identifier and password are required",
+        });
+      }
+
+      // Cari berdasarkan username atau email
+      const user = await User.findOne({
+        $or: [{ username: identifier }, { email: identifier }],
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: "User not found",
+        });
+      }
+
+      // Cek password
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(401).json({
+          status: false,
+          statusCode: 401,
+          message: "Invalid password",
+        });
+      }
+      return res.status(200).json({
+        status: true,
+        statusCode: 200,
+        message: "Login successful",
+        data: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
+  }
+
+  // GET ALL USERS
+  static async getAllUsers(req, res) {
+    try {
+      let { page = 1, limit = 10, search } = req.query;
+
+      page = parseInt(page);
+      limit = parseInt(limit);
+      const filter = {};
+
+      if (search) {
+        filter.$or = [
+          { username: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const totalUsers = await User.countDocuments(filter);
+      const users = await User.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ username: 1 });
+
+      res.json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully fetched users",
+        data: users,
+        pagination: {
+          totalData: totalUsers,
+          currentPage: page,
+          totalPages: Math.ceil(totalUsers / limit),
+          limit,
+        },
+      });
+    } catch (err) {
+      res.json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
+  }
+
+  // GET USER BY ID
+  static async getUserById(req, res) {
+    try {
+      const { id } = req.params;
+
+      const user = await User.findById(id);
+
+      if (!user) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: "User not found",
+        });
+      }
+
+      res.json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully fetched user",
+        data: user,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
+  }
+
+  // UPDATE USER
+  static async updateUser(req, res) {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+
+      // Jika update password → hash ulang
+      if (updatedData.password) {
+        updatedData.password = await bcrypt.hash(updatedData.password, 10);
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(id, updatedData, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: "User not found",
+        });
+      }
+
+      res.json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully updated user",
+        data: updatedUser,
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
+  }
+
+  // DELETE USER
+  static async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+      const deletedUser = await User.findByIdAndDelete(id);
+
+      if (!deletedUser) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: "User not found",
+        });
+      }
+
+      res.json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully deleted user",
+      });
+    } catch (err) {
+      res.status(500).json({
+        status: false,
+        statusCode: 500,
+        message: "Internal Server Error",
+        details: err.message,
+      });
+    }
   }
 }
 
