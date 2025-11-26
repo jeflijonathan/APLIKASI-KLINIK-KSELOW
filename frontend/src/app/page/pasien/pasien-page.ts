@@ -1,4 +1,11 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  NgZone,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { Dialog } from '../../common/components/dialog/dialog';
@@ -21,17 +28,17 @@ interface PasienType {
   styleUrl: './pasien-page.css',
 })
 export class PasienPage implements OnInit {
+  // =========================
+  //         STATES
+  // =========================
   isDialogOpen = false;
   isLoading = false;
   errorMessage = '';
 
-  // Expose Math object to template
   Math = Math;
 
-  // Data table
   dataPasien: PasienType[] = [];
 
-  // Filter & Search
   searchQuery = '';
   filterJenisKelamin = '';
   filterAsuransi = '';
@@ -44,15 +51,19 @@ export class PasienPage implements OnInit {
     class: '',
   };
 
-  formPasien: FormGroup;
+  formPasien!: FormGroup;
 
-  constructor(private dialog: MatDialog, private fb: FormBuilder) {
+  constructor(private dialog: MatDialog, private fb: FormBuilder, private cd: ChangeDetectorRef) {
     this.formPasien = this.fb.group({
       nama: [''],
       tanggal_lahir: [''],
       jenis_kelamin: [''],
       asuransi: [''],
     });
+  }
+
+  ngOnInit() {
+    this.fetchDataPasien();
   }
 
   @ViewChild('proj') proj!: TemplateRef<any>;
@@ -63,18 +74,20 @@ export class PasienPage implements OnInit {
     });
   }
 
+  openAddPasienDialog() {
+    this.isDialogOpen = true;
+  }
+
   async handleSubmit() {
     if (this.formPasien.invalid) {
-      alert('Harap isi semua field yang wajib!');
+      alert('Harap isi semua field!');
       return;
     }
 
     try {
       const res = await fetch('http://localhost:3000/api/pasien', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(this.formPasien.value),
       });
 
@@ -84,48 +97,41 @@ export class PasienPage implements OnInit {
         alert('Data pasien berhasil disimpan!');
         this.formPasien.reset();
         this.isDialogOpen = false;
-        this.fetchDataPasien(); // Refresh data
+        this.fetchDataPasien();
       } else {
-        alert('Error: ' + (data.message || data.details?.[0] || 'Gagal menyimpan data'));
+        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
       }
     } catch (error) {
-      alert('Terjadi kesalahan saat mengirim data: ' + error);
+      alert('Kesalahan mengirim data: ' + error);
     }
   }
+
   async fetchDataPasien() {
     this.isLoading = true;
     this.errorMessage = '';
 
     try {
-      const params = new URLSearchParams();
-      params.append('page', this.currentPage.toString());
-      params.append('limit', this.pageSize.toString());
+      let url = `http://localhost:3000/api/pasien?page=${this.currentPage}&limit=${this.pageSize}`;
 
-      if (this.searchQuery.trim()) {
-        params.append('search', this.searchQuery);
-      }
-      if (this.filterJenisKelamin) {
-        params.append('jenis_kelamin', this.filterJenisKelamin);
-      }
-      if (this.filterAsuransi) {
-        params.append('asuransi', this.filterAsuransi);
-      }
+      if (this.searchQuery.trim()) url += `&search=${this.searchQuery.trim()}`;
+      if (this.filterJenisKelamin) url += `&jenis_kelamin=${this.filterJenisKelamin}`;
+      if (this.filterAsuransi) url += `&asuransi=${this.filterAsuransi}`;
 
-      const res = await fetch(`http://localhost:3000/api/pasien?${params.toString()}`);
+      console.log('REQUEST:', url);
 
-      if (!res.ok) {
-        throw new Error('Gagal mengambil data pasien');
-      }
-
+      const res = await fetch(url);
       const data = await res.json();
+
       this.dataPasien = data.data || [];
       this.totalData = data.total || 0;
-      console.log('Data Pasien:', this.dataPasien);
+
+      // 👉 SOLUSI WAJIB
+      this.cd.detectChanges();
     } catch (error) {
       this.errorMessage = 'Terjadi kesalahan: ' + error;
-      console.error('Error fetching data:', error);
     } finally {
       this.isLoading = false;
+      this.cd.detectChanges(); // 👉 PENTING BANGET
     }
   }
 
@@ -139,27 +145,8 @@ export class PasienPage implements OnInit {
     this.fetchDataPasien();
   }
 
-  resetFilters() {
-    this.searchQuery = '';
-    this.filterJenisKelamin = '';
-    this.filterAsuransi = '';
-    this.currentPage = 1;
-    this.fetchDataPasien();
-  }
-
   onPageChange(page: number) {
     this.currentPage = page;
-    this.fetchDataPasien();
-  }
-  openAddPasienDialog() {
-    this.isDialogOpen = true;
-  }
-
-  onDialogClosed(evt: any) {
-    console.log(evt);
-  }
-
-  ngOnInit() {
     this.fetchDataPasien();
   }
 }

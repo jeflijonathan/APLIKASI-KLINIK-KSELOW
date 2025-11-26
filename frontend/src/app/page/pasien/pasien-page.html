@@ -49,10 +49,6 @@
           <option value="Tidak Ada">Tidak Ada</option>
         </select>
       </div>
-
-      <div class="col-12">
-        <button class="btn btn-secondary" (click)="resetFilters()">Hapus Filter</button>
-      </div>
     </div>
 
     <div class="row">
@@ -137,7 +133,6 @@
         [class]=""
         title="Daftarkan Pasien"
         [(opened)]="isDialogOpen"
-        (closed)="onDialogClosed($event)"
         (submitted)="handleSubmit()"
       >
         <form [formGroup]="formPasien">
