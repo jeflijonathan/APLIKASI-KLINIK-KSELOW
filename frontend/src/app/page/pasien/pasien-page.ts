@@ -64,7 +64,6 @@ export class PasienPage implements OnInit {
       alert('Kesalahan mengirim data: ' + error);
     }
   }
-
   async fetchDataPasien() {
     console.log('Fetching data pasien...');
     this.isLoading = true;
@@ -74,22 +73,13 @@ export class PasienPage implements OnInit {
       let url = `http://localhost:3000/api/pasien?page=${this.currentPage}&limit=${this.pageSize}`;
 
       if (this.searchQuery.trim()) url += `&search=${this.searchQuery.trim()}`;
-      if (this.filterJenisKelamin) url += `&jenis_kelamin=${this.filterJenisKelamin}`;
-      if (this.filterAsuransi) url += `&asuransi=${this.filterAsuransi}`;
-
-      console.log('Request URL:', url);
 
       const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const data = await res.json();
       console.log('Response data:', data);
 
       this.dataPasien = data.data ?? [];
       this.totalData = Number(data.total ?? 0);
-
       this.cd.detectChanges();
     } catch (error) {
       this.errorMessage = 'Terjadi kesalahan: ' + error;
@@ -101,11 +91,6 @@ export class PasienPage implements OnInit {
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.fetchDataPasien();
-  }
-
-  onFilterChange() {
     this.currentPage = 1;
     this.fetchDataPasien();
   }

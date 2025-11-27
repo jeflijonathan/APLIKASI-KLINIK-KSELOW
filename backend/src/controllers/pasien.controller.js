@@ -1,4 +1,5 @@
 import pasienSchema from "#models/pasien.model.js";
+
 class PasienController {
   static async getAllPasien(req, res) {
     try {
@@ -9,17 +10,14 @@ class PasienController {
 
       const filter = {};
 
-      // Search by nama
       if (search) {
         filter.nama = { $regex: search, $options: "i" };
       }
 
-      // Filter by jenis_kelamin
       if (jenis_kelamin) {
         filter.jenis_kelamin = jenis_kelamin;
       }
 
-      // Filter by asuransi
       if (asuransi) {
         filter.asuransi = asuransi;
       }
@@ -100,10 +98,9 @@ class PasienController {
       }
 
       if (!tanggal_lahir || tanggal_lahir === "") {
-        errorDetails.push("tanggal_lahir is Required"); // PERBAIKAN TYPO
+        errorDetails.push("tanggal_lahir is Required");
       }
 
-      // Anda juga harus memvalidasi jenis_kelamin dan asuransi
       if (!jenis_kelamin || jenis_kelamin === "") {
         errorDetails.push("jenis_kelamin is Required");
       }
@@ -112,10 +109,8 @@ class PasienController {
         errorDetails.push("asuransi is Required");
       }
 
-      // PERBAIKAN: Cek jika array memiliki item (panjang > 0)
       if (errorDetails.length > 0) {
         return res.status(400).json({
-          // Lebih baik mengembalikan respons langsung di sini
           status: false,
           statusCode: 400,
           message: "Bad Request",

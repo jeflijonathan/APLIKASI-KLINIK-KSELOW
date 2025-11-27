@@ -3,17 +3,32 @@
     [class]=""
     title="Daftarkan Pasien"
     [(opened)]="isDialogOpen"
-    (submitted)="handleSubmit()"
+    (submitted)="submitForm()"
+    (closed)="isDialogOpen = false; isDialogOpenChange.emit(false)"
   >
     <form [formGroup]="formPasien">
       <div class="form-group mb-3">
         <label>Nama Pasien</label>
         <input formControlName="nama" type="text" class="form-control" />
+        <div
+          *ngIf="formPasien.get('nama')?.touched && formPasien.get('nama')?.invalid"
+          class="text-danger"
+        >
+          Nama harus diisi.
+        </div>
       </div>
 
       <div class="form-group mb-3">
         <label>Tanggal Lahir</label>
         <input formControlName="tanggal_lahir" type="date" class="form-control" />
+        <div
+          *ngIf="
+            formPasien.get('tanggal_lahir')?.touched && formPasien.get('tanggal_lahir')?.invalid
+          "
+          class="text-danger"
+        >
+          Tanggal lahir harus diisi.
+        </div>
       </div>
 
       <div class="form-group mb-3">
@@ -23,6 +38,14 @@
           <option value="Laki-laki">Laki-laki</option>
           <option value="Perempuan">Perempuan</option>
         </select>
+        <div
+          *ngIf="
+            formPasien.get('jenis_kelamin')?.touched && formPasien.get('jenis_kelamin')?.invalid
+          "
+          class="text-danger"
+        >
+          Jenis kelamin harus dipilih.
+        </div>
       </div>
 
       <div class="form-group mb-3">
@@ -34,6 +57,12 @@
           <option value="Mandiri Inhealth">Mandiri Inhealth</option>
           <option value="Tidak Ada">Tidak Ada</option>
         </select>
+        <div
+          *ngIf="formPasien.get('asuransi')?.touched && formPasien.get('asuransi')?.invalid"
+          class="text-danger"
+        >
+          Asuransi harus dipilih.
+        </div>
       </div>
     </form>
   </app-dialog>
