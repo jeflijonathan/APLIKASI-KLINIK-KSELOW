@@ -1,7 +1,13 @@
-<h2 mat-dialog-title>Contoh Dialog</h2>
-<mat-dialog-content> {} </mat-dialog-content>
+<div class="dialog-overlay" *ngIf="opened" (click)="onCancel()">
+  <div class="dialog-container" (click)="$event.stopPropagation()">
+    <h2 class="dialog-title">{{ title || 'Dialog' }}</h2>
+    <div class="dialog-content">
+      <ng-content></ng-content>
+    </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
-  <button mat-button color="primary" (click)="submit()">OK</button>
-</mat-dialog-actions>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="onSubmit()">Submit</button>
+    </div>
+  </div>
+</div>
