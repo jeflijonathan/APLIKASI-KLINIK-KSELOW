@@ -3,7 +3,7 @@
     <h1>Manajemen Pasien</h1>
   </div>
   <div class="row">
-    <p>Kelola data identitas dan riwayat pasien</p>
+    <p>Kelola data identitas pasien</p>
   </div>
   <div class="container">
     <div class="row mb-3 mt-3">
@@ -12,7 +12,6 @@
       </button>
     </div>
 
-    <!-- Filter & Search Section -->
     <div class="row mb-4 p-3 border rounded bg-light">
       <h5>Filter & Cari Data</h5>
 
@@ -82,7 +81,7 @@
                 <td>{{ pasien.asuransi }}</td>
                 <td>{{ pasien.createdAt | date : 'dd/MM/yyyy HH:mm' }}</td>
                 <td>
-                  <button class="btn btn-sm btn-warning me-2">✏️ Edit</button>
+                  <button class="btn btn-sm btn-warning me-2">Edit</button>
                 </td>
               </tr>
             </tbody>
@@ -93,7 +92,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div *ngIf="dataPasien.length > 0" class="row mt-4">
           <div class="col-12 d-flex justify-content-between align-items-center">
             <div>
@@ -126,47 +124,11 @@
         </div>
       </div>
     </div>
-
-    <!-- Add Pasien Dialog -->
     <div class="row">
-      <app-dialog
-        [class]=""
-        title="Daftarkan Pasien"
-        [(opened)]="isDialogOpen"
-        (submitted)="handleSubmit()"
-      >
-        <form [formGroup]="formPasien">
-          <div class="form-group mb-3">
-            <label>Nama Pasien</label>
-            <input formControlName="nama" type="text" class="form-control" />
-          </div>
-
-          <div class="form-group mb-3">
-            <label>Tanggal Lahir</label>
-            <input formControlName="tanggal_lahir" type="date" class="form-control" />
-          </div>
-
-          <div class="form-group mb-3">
-            <label>Jenis Kelamin</label>
-            <select formControlName="jenis_kelamin" class="form-control">
-              <option value="">-- Pilih Jenis Kelamin --</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>
-
-          <div class="form-group mb-3">
-            <label>Asuransi</label>
-            <select formControlName="asuransi" class="form-control">
-              <option value="">-- Pilih Asuransi --</option>
-              <option value="BPJS Kesehatan">BPJS Kesehatan</option>
-              <option value="Asuransi Swasta">Asuransi Swasta</option>
-              <option value="Mandiri Inhealth">Mandiri Inhealth</option>
-              <option value="Tidak Ada">Tidak Ada</option>
-            </select>
-          </div>
-        </form>
-      </app-dialog>
+      <app-create
+        [(isDialogOpen)]="isDialogOpen"
+        (submitted)="handleCreateSubmit($event)"
+      ></app-create>
     </div>
   </div>
 </div>
