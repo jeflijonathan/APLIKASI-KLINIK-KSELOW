@@ -1,7 +1,6 @@
 // src/app/page/pasien/pasien-page.ts
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // Tambahkan DatePipe untuk *ngFor
-
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
 
@@ -17,69 +16,45 @@ interface PasienType {
 @Component({
   selector: 'app-pasien-page',
   standalone: true,
-  // 1. Hapus Dialog dari imports, karena tidak digunakan di template ini
   imports: [Create, FormsModule, ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './pasien-page.html',
   styleUrl: './pasien-page.css',
-  // Catatan: MatDialog, NgZone, TemplateRef, ViewChild tidak digunakan di kode yang tersedia.
-  // Anda bisa menghapusnya dari imports dan class jika tidak digunakan di bagian lain.
 })
 export class PasienPage implements OnInit {
-  // =========================
-  //         STATES
-  // =========================
   isDialogOpen = false;
   isLoading = false;
   errorMessage = '';
-
   Math = Math;
-
   dataPasien: PasienType[] = [];
-
   searchQuery = '';
   filterJenisKelamin = '';
   filterAsuransi = '';
-  currentPage = 1;
-  pageSize = 10;
-  totalData = 0;
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalData: number = 0;
 
-  // formPasien Dihapus dari sini karena sudah dikelola di Create
-  // formPasien!: FormGroup;
-
-  // Hapus MatDialog dan FormBuilder dari constructor jika tidak digunakan
-  constructor(private cd: ChangeDetectorRef) {
-    // Hapus inisialisasi this.formPasien di sini
-  }
+  constructor(private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.fetchDataPasien();
   }
 
-  // openWithTemplate() dan ViewChild dihapus jika tidak digunakan
-
   openAddPasienDialog() {
     this.isDialogOpen = true;
   }
 
-  // 2. Perbaikan handleSubmit: Ganti nama dan terima data pasien sebagai argumen
   async handleCreateSubmit(formData: PasienType) {
-    // <--- Terima data pasien
-
-    // Perhatian: Tidak perlu ada this.formPasien.invalid check lagi
-    // karena komponen Create menjamin data yang dikirimkan sudah valid.
-
     try {
       const res = await fetch('http://localhost:3000/api/pasien', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData), // Gunakan formData dari komponen Create
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         alert('Data pasien berhasil disimpan!');
-        // Tidak perlu this.formPasien.reset() lagi
         this.isDialogOpen = false;
         this.fetchDataPasien();
       } else {
@@ -90,8 +65,8 @@ export class PasienPage implements OnInit {
     }
   }
 
-  // ... (fetchDataPasien, onSearch, onFilterChange, onPageChange)
   async fetchDataPasien() {
+    console.log('Fetching data pasien...');
     this.isLoading = true;
     this.errorMessage = '';
 
@@ -102,21 +77,26 @@ export class PasienPage implements OnInit {
       if (this.filterJenisKelamin) url += `&jenis_kelamin=${this.filterJenisKelamin}`;
       if (this.filterAsuransi) url += `&asuransi=${this.filterAsuransi}`;
 
-      console.log('REQUEST:', url);
+      console.log('Request URL:', url);
 
       const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await res.json();
+      console.log('Response data:', data);
 
-      this.dataPasien = data.data || [];
-      this.totalData = data.total || 0;
+      this.dataPasien = data.data ?? [];
+      this.totalData = Number(data.total ?? 0);
 
-      // 👉 SOLUSI WAJIB
       this.cd.detectChanges();
     } catch (error) {
       this.errorMessage = 'Terjadi kesalahan: ' + error;
+      console.error('fetchDataPasien error:', error);
     } finally {
       this.isLoading = false;
-      this.cd.detectChanges(); // 👉 PENTING BANGET
+      this.cd.detectChanges();
     }
   }
 
