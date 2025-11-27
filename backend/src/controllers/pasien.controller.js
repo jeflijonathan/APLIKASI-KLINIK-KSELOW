@@ -158,8 +158,102 @@ class PasienController {
       });
     }
   }
+  static async updatePasien(req, res) {
+    try {
+      const { id } = req.params;
+      const { nama, tanggal_lahir, jenis_kelamin, asuransi } = req.body;
+      const updateData = {};
+      let errorDetails = [];
 
-  static async updatePasien(req, res) {}
+      // Validasi data yang akan diupdate (hanya cek jika ada di body)
+      if (nama !== undefined && nama !== "") {
+        updateData.nama = nama;
+      } else if (nama === "") {
+        errorDetails.push("nama tidak boleh kosong");
+      }
+
+      if (tanggal_lahir !== undefined && tanggal_lahir !== "") {
+        updateData.tanggal_lahir = tanggal_lahir;
+      } else if (tanggal_lahir === "") {
+        errorDetails.push("tanggal_lahir tidak boleh kosong");
+      }
+
+      if (jenis_kelamin !== undefined && jenis_kelamin !== "") {
+        updateData.jenis_kelamin = jenis_kelamin;
+      } else if (jenis_kelamin === "") {
+        errorDetails.push("jenis_kelamin tidak boleh kosong");
+      }
+
+      if (asuransi !== undefined && asuransi !== "") {
+        updateData.asuransi = asuransi;
+      } else if (asuransi === "") {
+        errorDetails.push("asuransi tidak boleh kosong");
+      }
+
+      // Cek jika ada error validasi
+      if (errorDetails.length > 0) {
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "Bad Request: Data tidak valid",
+          details: errorDetails,
+        });
+      }
+
+      // Cek jika tidak ada data yang akan diupdate
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({
+          status: false,
+          statusCode: 400,
+          message: "Bad Request: Tidak ada data yang dikirim untuk diupdate",
+        });
+      }
+
+      // Lakukan update data
+      const pasien = await pasienSchema.findByIdAndUpdate(
+        id,
+        { $set: updateData }, // Menggunakan $set untuk mengupdate hanya field yang ada di updateData
+        { new: true, runValidators: true } // new: true mengembalikan dokumen yang sudah diupdate, runValidators: true menjalankan validasi skema
+      );
+
+      // Cek jika pasien tidak ditemukan
+      if (!pasien) {
+        return res.status(404).json({
+          status: false,
+          statusCode: 404,
+          message: "Pasien not found",
+        });
+      }
+      res.json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully updated pasien",
+        data: pasien,
+      });
+    } catch (err) {
+      console.error(err);
+      let statusCode = 500;
+      let message = "Failed to update pasien";
+
+      // Menangani error validasi dari Mongoose (misalnya tipe data salah)
+      if (err.name === "ValidationError") {
+        statusCode = 400;
+        message = err.message;
+      } else if (err.name === "CastError") {
+        // Menangani jika ID yang diberikan tidak valid
+        statusCode = 400;
+        message = "Invalid Pasien ID format";
+      } else if (err.statusCode) {
+        statusCode = err.statusCode;
+        message = err.message;
+      }
+      res.status(statusCode).json({
+        status: false,
+        statusCode: statusCode,
+        message: message,
+      });
+    }
+  }
 }
 
 export default PasienController;
