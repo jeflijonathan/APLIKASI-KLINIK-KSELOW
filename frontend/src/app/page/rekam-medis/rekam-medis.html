@@ -1,0 +1,231 @@
+<!-- <div class="page-container">
+  <header class="page-header">
+    <h1>Rekam Medis</h1>
+    <p class="subtitle">Kelola rekam medis dan riwayat pemeriksaan pasien</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" placeholder="Cari rekam medis..." />
+    </div>
+    <button class="btn btn-primary w-100" (click)="openInputDialog()">+ Input Rekam Medis</button>
+  </div>
+
+  <app-dialog
+    [(opened)]="isInputDialogOpen"
+    title="Input Rekam Medis Baru"
+    (submitted)="onInputDialogSubmit()"
+  >
+    <form [formGroup]="formRekamMedis">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nama Pasien *</label>
+          <input
+            formControlName="pasienName"
+            type="text"
+            class="form-control"
+            placeholder="Nama lengkap"
+          />
+        </div>
+        <div class="form-group">
+          <label>Dokter Pemeriksa *</label>
+          <input formControlName="dokter" type="text" class="form-control" placeholder="Dr. ..." />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tanggal Pemeriksaan *</label>
+          <input formControlName="tanggal" type="date" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Waktu</label>
+          <input formControlName="waktu" type="time" class="form-control" />
+        </div>
+      </div>
+
+      <label class="section-label">Tanda Vital</label>
+      <div class="form-row vital-row">
+        <div class="form-group">
+          <label>Tekanan Darah</label>
+          <input formControlName="tensi" type="text" class="form-control" placeholder="120/80" />
+        </div>
+        <div class="form-group">
+          <label>Suhu (°C)</label>
+          <input formControlName="suhu" type="text" class="form-control" placeholder="36.5" />
+        </div>
+        <div class="form-group">
+          <label>Nadi</label>
+          <input formControlName="nadi" type="text" class="form-control" placeholder="80" />
+        </div>
+        <div class="form-group">
+          <label>Berat Badan (kg)</label>
+          <input formControlName="berat" type="text" class="form-control" placeholder="65" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Keluhan Pasien *</label>
+        <textarea
+          formControlName="keluhan"
+          class="form-control"
+          placeholder="Deskripsikan keluhan..."
+          rows="2"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Diagnosa *</label>
+        <textarea
+          formControlName="diagnosa"
+          class="form-control"
+          placeholder="Hasil diagnosa..."
+          rows="2"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Tindakan dan Terapi</label>
+        <textarea
+          formControlName="tindakan"
+          class="form-control"
+          placeholder="Tindakan medis..."
+          rows="2"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Resep Obat</label>
+        <input
+          formControlName="resep"
+          type="text"
+          class="form-control"
+          placeholder="Nama obat, contoh: Paracetamol 500mg"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Catatan Tambahan</label>
+        <textarea
+          formControlName="catatan"
+          class="form-control"
+          placeholder="Catatan penting..."
+          rows="2"
+        ></textarea>
+      </div>
+    </form>
+  </app-dialog>
+
+  <div class="card-list">
+    <div class="card" *ngFor="let item of dataRekamMedis">
+      <div class="card-header">
+        <div class="patient-icon">📄</div>
+        <div class="header-info">
+          <div class="row-top">
+            <span class="patient-name">{{ item.pasienName }}</span>
+            <span class="patient-id-tag">{{ item.id }}</span>
+          </div>
+          <div class="row-bottom">
+            <span class="date">📅 {{ item.tanggal }}</span>
+            <span class="separator">•</span>
+            <span class="doctor">{{ item.dokter }}</span>
+          </div>
+        </div>
+        <div class="action-icon" (click)="openDetail(item)">👁️</div>
+      </div>
+      <hr class="divider" />
+      <div class="card-body">
+        <div class="col">
+          <label>Keluhan</label>
+          <p>{{ item.keluhan }}</p>
+        </div>
+        <div class="col">
+          <label>Diagnosa</label>
+          <p>{{ item.diagnosa }}</p>
+        </div>
+      </div>
+      <div class="card-footer">
+        <label>Resep</label>
+        <div class="tags-container">
+          <span class="medicine-tag">{{ item.resep }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-dialog 
+    [(opened)]="isDetailDialogOpen"
+    title="Detail Rekam Medis"
+    (submitted)="closeDetailDialog()"
+  >
+    <div *ngIf="selectedRecord" class="detail-content">
+      <h3 class="detail-section-title">Informasi Pasien</h3>
+      <div class="detail-grid">
+        <div>
+          <label>Nama Pasien</label>
+          <p>{{ selectedRecord.pasienName }}</p>
+        </div>
+        <div>
+          <label>ID Rekam Medis</label>
+          <p>{{ selectedRecord.id }}</p>
+        </div>
+        <div>
+          <label>Tanggal Pemeriksaan</label>
+          <p>{{ selectedRecord.tanggal }}</p>
+        </div>
+        <div>
+          <label>Waktu</label>
+          <p>{{ selectedRecord.waktu }}</p>
+        </div>
+      </div>
+
+      <h3 class="detail-section-title mt-3">Tanda Vital</h3>
+      <div class="detail-grid">
+        <div>
+          <label>Tekanan Darah</label>
+          <p>{{ selectedRecord.tensi }}</p>
+        </div>
+        <div>
+          <label>Suhu</label>
+          <p>{{ selectedRecord.suhu }}°C</p>
+        </div>
+        <div>
+          <label>Nadi</label>
+          <p>{{ selectedRecord.nadi }} x/menit</p>
+        </div>
+        <div>
+          <label>Berat Badan</label>
+          <p>{{ selectedRecord.berat }} kg</p>
+        </div>
+      </div>
+
+      <h3 class="detail-section-title mt-3">Detail Pemeriksaan</h3>
+      <div class="detail-stack">
+        <div>
+          <label>Dokter Pemeriksa</label>
+          <p>{{ selectedRecord.dokter }}</p>
+        </div>
+        <div>
+          <label>Keluhan</label>
+          <p>{{ selectedRecord.keluhan }}</p>
+        </div>
+        <div>
+          <label>Diagnosa</label>
+          <p>{{ selectedRecord.diagnosa }}</p>
+        </div>
+        <div>
+          <label>Tindakan dan Terapi</label>
+          <p>{{ selectedRecord.tindakan }}</p>
+        </div>
+      </div>
+
+      <h3 class="detail-section-title mt-3">Resep Obat</h3>
+      <p>{{ selectedRecord.resep }}</p>
+
+      <h3 class="detail-section-title mt-3">Catatan</h3>
+      <p>{{ selectedRecord.catatan }}</p>
+    </div>
+  </app-dialog>
+</div>
+</div> -->

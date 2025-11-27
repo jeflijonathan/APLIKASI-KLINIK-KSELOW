@@ -2,15 +2,26 @@ import pasienSchema from "#models/pasien.model.js";
 class PasienController {
   static async getAllPasien(req, res) {
     try {
-      let { page = 1, limit = 10, search } = req.query;
+      let { page = 1, limit = 10, search, jenis_kelamin, asuransi } = req.query;
 
       page = parseInt(page);
       limit = parseInt(limit);
 
       const filter = {};
 
+      // Search by nama
       if (search) {
         filter.nama = { $regex: search, $options: "i" };
+      }
+
+      // Filter by jenis_kelamin
+      if (jenis_kelamin) {
+        filter.jenis_kelamin = jenis_kelamin;
+      }
+
+      // Filter by asuransi
+      if (asuransi) {
+        filter.asuransi = asuransi;
       }
 
       const totalData = await pasienSchema.countDocuments(filter);
@@ -19,13 +30,14 @@ class PasienController {
         .find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
-        .sort({ nama: 1 });
+        .sort({ createdAt: -1 });
 
       res.json({
         status: true,
         statusCode: 200,
         message: "Successfully fetched data pasien",
         data: data,
+        total: totalData,
         pagination: {
           totalData,
           currentPage: page,
