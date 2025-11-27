@@ -1,15 +1,9 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  NgZone,
-  OnInit,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatDialog } from '@angular/material/dialog';
-import { Dialog } from '../../common/components/dialog/dialog';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+// src/app/page/pasien/pasien-page.ts
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common'; // Tambahkan DatePipe untuk *ngFor
+
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Create } from './Create/create';
 
 interface PasienType {
   _id?: string;
@@ -23,13 +17,16 @@ interface PasienType {
 @Component({
   selector: 'app-pasien-page',
   standalone: true,
-  imports: [Dialog, FormsModule, ReactiveFormsModule, CommonModule],
+  // 1. Hapus Dialog dari imports, karena tidak digunakan di template ini
+  imports: [Create, FormsModule, ReactiveFormsModule, CommonModule, DatePipe],
   templateUrl: './pasien-page.html',
   styleUrl: './pasien-page.css',
+  // Catatan: MatDialog, NgZone, TemplateRef, ViewChild tidak digunakan di kode yang tersedia.
+  // Anda bisa menghapusnya dari imports dan class jika tidak digunakan di bagian lain.
 })
 export class PasienPage implements OnInit {
   // =========================
-  //         STATES
+  //         STATES
   // =========================
   isDialogOpen = false;
   isLoading = false;
@@ -46,56 +43,43 @@ export class PasienPage implements OnInit {
   pageSize = 10;
   totalData = 0;
 
-  dialogCreateConfig = {
-    title: 'Daftarkan Pasien',
-    class: '',
-  };
+  // formPasien Dihapus dari sini karena sudah dikelola di Create
+  // formPasien!: FormGroup;
 
-  formPasien!: FormGroup;
-
-  constructor(private dialog: MatDialog, private fb: FormBuilder, private cd: ChangeDetectorRef) {
-    this.formPasien = this.fb.group({
-      nama: [''],
-      tanggal_lahir: [''],
-      jenis_kelamin: [''],
-      asuransi: [''],
-    });
+  // Hapus MatDialog dan FormBuilder dari constructor jika tidak digunakan
+  constructor(private cd: ChangeDetectorRef) {
+    // Hapus inisialisasi this.formPasien di sini
   }
 
   ngOnInit() {
     this.fetchDataPasien();
   }
 
-  @ViewChild('proj') proj!: TemplateRef<any>;
-
-  openWithTemplate() {
-    this.dialog.open(Dialog, {
-      data: { title: 'Tambah Pasien', template: this.proj },
-    });
-  }
+  // openWithTemplate() dan ViewChild dihapus jika tidak digunakan
 
   openAddPasienDialog() {
     this.isDialogOpen = true;
   }
 
-  async handleSubmit() {
-    if (this.formPasien.invalid) {
-      alert('Harap isi semua field!');
-      return;
-    }
+  // 2. Perbaikan handleSubmit: Ganti nama dan terima data pasien sebagai argumen
+  async handleCreateSubmit(formData: PasienType) {
+    // <--- Terima data pasien
+
+    // Perhatian: Tidak perlu ada this.formPasien.invalid check lagi
+    // karena komponen Create menjamin data yang dikirimkan sudah valid.
 
     try {
       const res = await fetch('http://localhost:3000/api/pasien', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.formPasien.value),
+        body: JSON.stringify(formData), // Gunakan formData dari komponen Create
       });
 
       const data = await res.json();
 
       if (res.ok) {
         alert('Data pasien berhasil disimpan!');
-        this.formPasien.reset();
+        // Tidak perlu this.formPasien.reset() lagi
         this.isDialogOpen = false;
         this.fetchDataPasien();
       } else {
@@ -106,6 +90,7 @@ export class PasienPage implements OnInit {
     }
   }
 
+  // ... (fetchDataPasien, onSearch, onFilterChange, onPageChange)
   async fetchDataPasien() {
     this.isLoading = true;
     this.errorMessage = '';
