@@ -53,16 +53,14 @@
       <div class="row">
         <div class="col-12">
           <div class="table-responsive">
-            <div *ngIf="state.isLoading" class="alert alert-info">Memuat data...</div>
-
-            <div *ngIf="state.errorMessage" class="alert alert-danger">
+            @if(state.isLoading) {
+            <div class="alert alert-info">Memuat data...</div>
+            } @if(state.errorMessage) {
+            <div class="alert alert-danger">
               {{ state.errorMessage }}
             </div>
-
-            <table
-              *ngIf="!state.isLoading && dataPasien.length > 0"
-              class="table table-striped table-hover"
-            >
+            } @if(!state.isLoading && dataPasien.length > 0 ) {
+            <table class="table table-striped table-hover">
               <thead class="table-dark">
                 <tr>
                   <th>No.</th>
@@ -97,12 +95,12 @@
               </tbody>
             </table>
 
-            <div *ngIf="!state.isLoading && dataPasien.length === 0" class="alert alert-warning">
-              Tidak ada data pasien
-            </div>
+            } @if(!state.isLoading && dataPasien.length === 0) {
+            <div class="alert alert-warning">Tidak ada data pasien</div>
+            }
           </div>
-
-          <div *ngIf="dataPasien.length > 0" class="row mt-4">
+          @if(dataPasien.length > 0) {
+          <div class="row mt-4">
             <div class="col-12 d-flex justify-content-between align-items-center">
               <div>
                 <small class="text-muted"
@@ -136,6 +134,7 @@
               </nav>
             </div>
           </div>
+          }
         </div>
       </div>
       <div class="row">
@@ -145,7 +144,10 @@
         ></app-create>
       </div>
       <div class="row">
-        <app-update [id]="updateId" [(isDialogOpen)]="isDialogUpdateOpen"></app-update>
+        <app-update-pasien
+          [id]="updateId"
+          [(isDialogOpen)]="isDialogUpdateOpen"
+        ></app-update-pasien>
       </div>
     </div>
   </div>

@@ -1,12 +1,6 @@
-// src/app/page/pasien/Create/create.ts
 import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  FormGroup,
-  Validators, // Penting: Import Validators
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Dialog } from '../../../common/components/dialog/dialog';
 
 @Component({

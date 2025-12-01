@@ -1,4 +1,5 @@
-<div class="dialog-overlay" *ngIf="opened" (click)="onCancel()">
+@if(opened) {
+<div class="dialog-overlay" (click)="onCancel()">
   <div class="dialog-container" (click)="$event.stopPropagation()">
     <h2 class="dialog-title">{{ title || 'Dialog' }}</h2>
     <div class="dialog-content">
@@ -11,3 +12,4 @@
     </div>
   </div>
 </div>
+}

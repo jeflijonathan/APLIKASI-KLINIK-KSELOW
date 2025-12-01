@@ -1,16 +1,18 @@
-import { Component, Input, OnInit, Output, signal, SimpleChanges, OnChanges } from '@angular/core';
-import { EventEmitter } from '@angular/core';
-import { Dialog } from '../../../common/components/dialog/dialog';
 import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  signal,
+} from '@angular/core';
+import { Dialog } from '../../../common/components/dialog/dialog';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PasienService } from '../../../api/pasien';
 import { PasienFormUpdateModel, PasienUpdateModel } from '../../../api/pasien/model';
 import { CommonModule } from '@angular/common';
+import { PasienStore } from '../List/hook/pasien.store';
 
 export type PasienUpdateStateType = {
   pasien: PasienUpdateModel;
@@ -18,16 +20,16 @@ export type PasienUpdateStateType = {
 };
 
 @Component({
-  selector: 'app-update',
+  selector: 'app-update-pasien',
   imports: [Dialog, CommonModule, ReactiveFormsModule],
   templateUrl: './update.html',
   styleUrl: './update.css',
 })
-export class Update implements OnInit, OnChanges {
+export class Update implements OnChanges {
   @Input() id: string = '';
   @Input() isDialogOpen = false;
-  @Output() isDialogOpenChange = new EventEmitter<boolean>();
 
+  @Output() isDialogOpenChange = new EventEmitter<boolean>();
   @Output() closed = new EventEmitter<void>();
 
   private state = signal<PasienUpdateStateType>({
@@ -35,9 +37,13 @@ export class Update implements OnInit, OnChanges {
     errorMessage: '',
   });
 
-  formPasien: FormGroup<PasienFormUpdateModel>;
+  formPasien: FormGroup;
 
-  constructor(private fb: FormBuilder, private pasienService: PasienService) {
+  constructor(
+    private fb: FormBuilder,
+    private pasienService: PasienService,
+    public pasienStore: PasienStore
+  ) {
     this.formPasien = this.fb.group({
       nama: ['', Validators.required],
       tanggal_lahir: ['', Validators.required],
@@ -48,19 +54,21 @@ export class Update implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.fetchPasienById();
-  }
-
-  ngOnInit(): void {
-    this.fetchPasienById();
+    if (changes['id'] || changes['isDialogOpen']) {
+      if (this.id && this.isDialogOpen) {
+        this.fetchPasienById();
+      }
+    }
   }
 
   async fetchPasienById() {
+    if (!this.id) return;
+
     this.pasienService.getPasienById(this.id, {
       onSuccess: (data) => {
         this.formPasien.patchValue({
           nama: data.nama,
-          tanggal_lahir: data.tanggal_lahir,
+          tanggal_lahir: data.tanggal_lahir?.substring(0, 10) || '',
           jenis_kelamin: data.jenis_kelamin,
           asuransi: data.asuransi,
           isActive: data.isActive,
@@ -80,22 +88,24 @@ export class Update implements OnInit, OnChanges {
 
   submitForm() {
     this.formPasien.markAllAsTouched();
-    const updateData = this.formPasien.value as PasienUpdateModel;
-
     if (this.formPasien.invalid) {
+      alert('input tidak valid');
       return;
     }
 
-    this.pasienService.updatePasien(this.id, updateData, {
+    const formValue = this.formPasien.value as PasienUpdateModel;
+
+    this.pasienService.updatePasien(this.id, formValue, {
       onSuccess: () => {
         alert('Successfully Update Data');
+        this.pasienStore.fetchPasien();
+        this.isDialogOpen = false;
+        this.isDialogOpenChange.emit(false);
+        this.closed.emit();
       },
       onError: (err) => {
-        alert(err);
+        alert('Error updating data: ' + err);
       },
     });
-
-    this.isDialogOpen = false;
-    this.isDialogOpenChange.emit(false);
   }
 }
