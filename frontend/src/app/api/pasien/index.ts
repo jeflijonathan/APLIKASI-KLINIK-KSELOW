@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PasienCreateModel, PasienModel, PasienUpdateModel } from './model';
+import { PasienCreateModel, PasienFormUpdateModel, PasienModel, PasienUpdateModel } from './model';
 import { DataWithPagination, FetchCallback, FetchParams, APIResponse } from '../../common/type';
 import { API } from '../service';
 

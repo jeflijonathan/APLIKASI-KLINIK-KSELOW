@@ -15,58 +15,89 @@
     <div class="row mb-4 p-3 border rounded bg-light">
       <h5>Filter & Cari Data</h5>
 
-      <div class="col-12 col-md-6 mb-3">
-        <label class="form-label">Cari Nama Pasien</label>
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Ketik nama pasien..."
-            [(ngModel)]="searchQuery"
-            (keyup.enter)="onSearch()"
-          />
-          <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">Cari</button>
+      <div class="col-12 col-md-6 mb-3 d-flex gap-3">
+        <div class="form-group">
+          <label class="form-label">Cari Nama Pasien</label>
+          <div class="input-group gap-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Ketik nama pasien..."
+              [ngModel]="state.search"
+              (ngModelChange)="pasienStore.updateSearch($event)"
+              (keyup.enter)="onSearch()"
+            />
+            <div>
+              <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
+                Cari
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-3 mb-3">
+          <label class="form-label">Show</label>
+          <select
+            class="form-select"
+            [ngModel]="pagination.limit"
+            (ngModelChange)="onLimitChange($event)"
+          >
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
         </div>
       </div>
 
       <div class="row">
         <div class="col-12">
           <div class="table-responsive">
-            <div *ngIf="isLoading" class="alert alert-info">Memuat data...</div>
+            <div *ngIf="state.isLoading" class="alert alert-info">Memuat data...</div>
 
-            <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+            <div *ngIf="state.errorMessage" class="alert alert-danger">
+              {{ state.errorMessage }}
+            </div>
 
             <table
-              *ngIf="!isLoading && dataPasien.length > 0"
+              *ngIf="!state.isLoading && dataPasien.length > 0"
               class="table table-striped table-hover"
             >
               <thead class="table-dark">
                 <tr>
-                  <th>#</th>
+                  <th>No.</th>
                   <th>Nama Pasien</th>
                   <th>Tanggal Lahir</th>
                   <th>Jenis Kelamin</th>
                   <th>Asuransi</th>
                   <th>Tanggal Daftar</th>
+                  <th>Tanggal Diperbarui</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
+
               <tbody>
-                <tr *ngFor="let pasien of dataPasien; let i = index">
-                  <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-                  <td>{{ pasien.nama }}</td>
+                <tr *ngFor="let pasien of dataPasien; let i = index; trackBy: trackById">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ pasien.nama }} - {{ pasien._id }}</td>
                   <td>{{ pasien.tanggal_lahir | date : 'dd/MM/yyyy' }}</td>
                   <td>{{ pasien.jenis_kelamin }}</td>
                   <td>{{ pasien.asuransi }}</td>
                   <td>{{ pasien.createdAt | date : 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>{{ pasien.updatedAt | date : 'dd/MM/yyyy HH:mm' }}</td>
                   <td>
-                    <button class="btn btn-sm btn-warning me-2">Edit</button>
+                    <button
+                      class="btn btn-sm btn-warning me-2"
+                      (click)="openUpdatePasienDialog(pasien._id)"
+                    >
+                      Edit
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
 
-            <div *ngIf="!isLoading && dataPasien.length === 0" class="alert alert-warning">
+            <div *ngIf="!state.isLoading && dataPasien.length === 0" class="alert alert-warning">
               Tidak ada data pasien
             </div>
           </div>
@@ -75,26 +106,30 @@
             <div class="col-12 d-flex justify-content-between align-items-center">
               <div>
                 <small class="text-muted"
-                  >Menampilkan {{ (currentPage - 1) * pageSize + 1 }} -
-                  {{ Math.min(currentPage * pageSize, totalData) }} dari {{ totalData }} data</small
+                  >Menampilkan {{ (pagination.currentPage - 1) * pagination.limit + 1 }} -
+                  {{ Math.min(pagination.currentPage * pagination.limit, pagination.totalData) }}
+                  dari {{ pagination.totalData }} data</small
                 >
               </div>
               <nav>
                 <ul class="pagination mb-0">
-                  <li class="page-item" [class.disabled]="currentPage === 1">
-                    <button class="page-link" (click)="onPageChange(1)">« Pertama</button>
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(1)">«</button>
                   </li>
-                  <li class="page-item" [class.disabled]="currentPage === 1">
-                    <button class="page-link" (click)="onPageChange(currentPage - 1)">
-                      ‹ Sebelum
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(pagination.currentPage - 1)">
+                      ‹
                     </button>
                   </li>
                   <li class="page-item active">
-                    <span class="page-link">{{ currentPage }}</span>
+                    <span class="page-link">{{ pagination.currentPage }}</span>
                   </li>
-                  <li class="page-item" [class.disabled]="currentPage * pageSize >= totalData">
-                    <button class="page-link" (click)="onPageChange(currentPage + 1)">
-                      Sesudah ›
+                  <li
+                    class="page-item"
+                    [class.disabled]="pagination.currentPage === pagination.totalPages"
+                  >
+                    <button class="page-link" (click)="onPageChange(pagination.currentPage + 1)">
+                      ›
                     </button>
                   </li>
                 </ul>
@@ -108,6 +143,9 @@
           [(isDialogOpen)]="isDialogOpen"
           (submitted)="handleCreateSubmit($event)"
         ></app-create>
+      </div>
+      <div class="row">
+        <app-update [id]="updateId" [(isDialogOpen)]="isDialogUpdateOpen"></app-update>
       </div>
     </div>
   </div>

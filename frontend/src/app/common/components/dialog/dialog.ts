@@ -1,36 +1,33 @@
-import { Component, Inject, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dialog',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dialog.html',
   styleUrls: ['./dialog.css'],
-  standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
 export class Dialog {
-  @Input() title? = '';
-  @Input() class? = '';
+  @Input() title = '';
+  @Input() class = '';
   @Input() opened = true;
+
   @Output() openedChange = new EventEmitter<boolean>();
   @Output() closed = new EventEmitter<any>();
   @Output() submitted = new EventEmitter<any>();
 
-  constructor(@Optional() private dialogRef?: MatDialogRef<Dialog>) {}
+  dialogRef?: { close: (value: any) => void };
 
-  onSubmit(): void {
+  onSubmit() {
     this.submitted.emit(true);
 
     if (this.dialogRef) {
       this.dialogRef.close(true);
-    } else {
-      this.closeDialog();
     }
   }
 
-  onCancel(): void {
+  onCancel() {
     if (this.dialogRef) {
       this.dialogRef.close(false);
     } else {
@@ -39,7 +36,7 @@ export class Dialog {
     }
   }
 
-  private closeDialog(): void {
+  private closeDialog() {
     this.opened = false;
     this.openedChange.emit(false);
   }

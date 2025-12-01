@@ -1,4 +1,4 @@
-<!-- <div class="page-container">
+<div class="page-container">
   <header class="page-header">
     <h1>Rekam Medis</h1>
     <p class="subtitle">Kelola rekam medis dan riwayat pemeriksaan pasien</p>
@@ -127,7 +127,7 @@
             <span class="patient-id-tag">{{ item.id }}</span>
           </div>
           <div class="row-bottom">
-            <span class="date">📅 {{ item.tanggal }}</span>
+            <span class="date"> {{ item.tanggal }}</span>
             <span class="separator">•</span>
             <span class="doctor">{{ item.dokter }}</span>
           </div>
@@ -154,7 +154,7 @@
     </div>
   </div>
 
-  <app-dialog 
+  <app-dialog
     [(opened)]="isDetailDialogOpen"
     title="Detail Rekam Medis"
     (submitted)="closeDetailDialog()"
@@ -228,4 +228,3 @@
     </div>
   </app-dialog>
 </div>
-</div> -->

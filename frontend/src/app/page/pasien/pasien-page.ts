@@ -1,49 +1,52 @@
-// src/app/page/pasien/pasien-page.ts
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { PasienModel } from '../../api/pasien/model';
+import { PasienStore } from './List/hook/pasien.store';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
-
-interface PasienType {
-  _id?: string;
-  nama: string;
-  tanggal_lahir: string;
-  jenis_kelamin: string;
-  asuransi: string;
-  createdAt?: string;
-}
+import { Update } from './Update/update';
 
 @Component({
   selector: 'app-pasien-page',
   standalone: true,
-  imports: [Create, FormsModule, ReactiveFormsModule, CommonModule, DatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update],
   templateUrl: './pasien-page.html',
-  styleUrl: './pasien-page.css',
+  styleUrls: ['./pasien-page.css'],
 })
 export class PasienPage implements OnInit {
   isDialogOpen = false;
-  isLoading = false;
-  errorMessage = '';
-  Math = Math;
-  dataPasien: PasienType[] = [];
-  searchQuery = '';
-  filterJenisKelamin = '';
-  filterAsuransi = '';
-  currentPage: number = 1;
-  pageSize: number = 10;
-  totalData: number = 0;
+  isDialogUpdateOpen = false;
+  updateId: string = '';
 
-  constructor(private cd: ChangeDetectorRef) {}
+  Math = Math;
+  constructor(private cd: ChangeDetectorRef, public pasienStore: PasienStore) {}
 
   ngOnInit() {
-    this.fetchDataPasien();
+    this.pasienStore.fetchPasien();
+  }
+
+  get pagination() {
+    return this.pasienStore.pagination();
+  }
+
+  get dataPasien() {
+    return this.pasienStore.pasienList();
+  }
+
+  get state() {
+    return this.pasienStore.getState();
   }
 
   openAddPasienDialog() {
     this.isDialogOpen = true;
   }
 
-  async handleCreateSubmit(formData: PasienType) {
+  openUpdatePasienDialog(id: string | undefined = 'kosong') {
+    this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
+    this.updateId = id;
+  }
+
+  async handleCreateSubmit(formData: PasienModel) {
     try {
       const res = await fetch('http://localhost:3000/api/pasien', {
         method: 'POST',
@@ -56,7 +59,7 @@ export class PasienPage implements OnInit {
       if (res.ok) {
         alert('Data pasien berhasil disimpan!');
         this.isDialogOpen = false;
-        this.fetchDataPasien();
+        this.pasienStore.fetchPasien();
       } else {
         alert('Error: ' + (data.message || 'Gagal menyimpan data'));
       }
@@ -64,39 +67,27 @@ export class PasienPage implements OnInit {
       alert('Kesalahan mengirim data: ' + error);
     }
   }
-  async fetchDataPasien() {
-    console.log('Fetching data pasien...');
-    this.isLoading = true;
-    this.errorMessage = '';
 
-    try {
-      let url = `http://localhost:3000/api/pasien?page=${this.currentPage}&limit=${this.pageSize}`;
-
-      if (this.searchQuery.trim()) url += `&search=${this.searchQuery.trim()}`;
-
-      const res = await fetch(url);
-      const data = await res.json();
-      console.log('Response data:', data);
-
-      this.dataPasien = data.data ?? [];
-      this.totalData = Number(data.total ?? 0);
-      this.cd.detectChanges();
-    } catch (error) {
-      this.errorMessage = 'Terjadi kesalahan: ' + error;
-      console.error('fetchDataPasien error:', error);
-    } finally {
-      this.isLoading = false;
-      this.cd.detectChanges();
-    }
+  trackById(index: number, item: PasienModel) {
+    return item._id;
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.fetchDataPasien();
+    this.pasienStore.setPagination({ currentPage: 1 });
+    this.pasienStore.fetchPasien();
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
-    this.fetchDataPasien();
+    this.pasienStore.setPagination({ currentPage: page });
+    this.pasienStore.fetchPasien();
+  }
+
+  onLimitChange(newLimit: number) {
+    this.pasienStore.setPagination({
+      limit: newLimit,
+      currentPage: 1,
+    });
+
+    this.pasienStore.fetchPasien();
   }
 }
