@@ -1,154 +1,119 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormsModule,
-} from '@angular/forms';
-import { Dialog } from '../../common/components/dialog/dialog';
-
-interface RekamMedisType {
-  id: string;
-  pasienName: string;
-  pasienId: string;
-  tanggal: string;
-  waktu: string;
-  dokter: string;
-  keluhan: string;
-  diagnosa: string;
-  tindakan: string;
-  resep: string;
-  catatan: string;
-  tensi: string;
-  suhu: string;
-  nadi: string;
-  berat: string;
-}
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { RekamMedisModel } from '../../api/rekammedis/model';
+import { RekammedisStore } from './List/hook/rekammedis.store';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Create } from './Create/create';
+import { Update } from './Update/update';
 
 @Component({
   selector: 'app-rekam-medis',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, Dialog],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update],
   templateUrl: './rekam-medis.html',
   styleUrls: ['./rekam-medis.css'],
 })
-export class RekamMedis {
-  // Dialog state
-  isInputDialogOpen = false;
-  isDetailDialogOpen = false;
+export class RekamMedisPage implements OnInit {
+  isDialogOpen = false;
+  isDialogUpdateOpen = false;
+  updateId: string = '';
 
-  // Form
-  formRekamMedis!: FormGroup;
+  Math = Math;
+  String = String;
+  constructor(private cd: ChangeDetectorRef, public rekammedisStore: RekammedisStore) {}
 
-  // Selected data
-  selectedRecord: RekamMedisType | null = null;
-
-  // Dummy data
-  dataRekamMedis: RekamMedisType[] = [
-    {
-      id: 'RM001',
-      pasienName: 'Ahmad Zulkarnain',
-      pasienId: 'P001',
-      tanggal: '2025-11-23',
-      waktu: '10:30',
-      dokter: 'Dr. Andi Wijaya, Sp.PD',
-      keluhan: 'Demam tinggi, sakit kepala',
-      diagnosa: 'Influenza',
-      tindakan: 'Istirahat total',
-      resep: 'Paracetamol 500mg 3x1, Vitamin C',
-      catatan: 'Perbanyak minum',
-      tensi: '120/80',
-      suhu: '38.5',
-      nadi: '90',
-      berat: '70',
-    },
-    {
-      id: 'RM002',
-      pasienName: 'Siti Nurhaliza',
-      pasienId: 'P002',
-      tanggal: '2025-11-22',
-      waktu: '09:15',
-      dokter: 'Dr. Maya Sari, Sp.A',
-      keluhan: 'Kontrol diabetes',
-      diagnosa: 'Diabetes Tipe 2',
-      tindakan: 'Diet gula',
-      resep: 'Metformin 500mg 2x1, Glimepiride 4mg 1x1',
-      catatan: 'Gula darah stabil',
-      tensi: '130/85',
-      suhu: '36.5',
-      nadi: '80',
-      berat: '65',
-    },
-  ];
-
-  constructor(private fb: FormBuilder) {
-    this.formRekamMedis = this.fb.group({
-      pasienName: ['', Validators.required],
-      pasienId: [''],
-      dokter: ['', Validators.required],
-      tanggal: ['', Validators.required],
-      waktu: [''],
-      tensi: [''],
-      suhu: [''],
-      nadi: [''],
-      berat: [''],
-      keluhan: ['', Validators.required],
-      diagnosa: ['', Validators.required],
-      tindakan: [''],
-      resep: [''],
-      catatan: [''],
-    });
+  ngOnInit() {
+    this.rekammedisStore.fetchRekamMedis();
   }
 
-  // Dialog handlers
-  openInputDialog(): void {
-    this.formRekamMedis.reset();
-    this.isInputDialogOpen = true;
+  get pagination() {
+    return this.rekammedisStore.pagination();
   }
 
-  closeInputDialog(): void {
-    this.isInputDialogOpen = false;
+  get dataRekamMedis() {
+    return this.rekammedisStore.rekammedisList();
   }
 
-  onInputDialogSubmit(): void {
-    if (this.formRekamMedis.invalid) {
-      alert('Harap lengkapi data wajib!');
-      return;
+  get state() {
+    return this.rekammedisStore.getState();
+  }
+
+  openAddRekamMedisDialog() {
+    this.isDialogOpen = true;
+  }
+
+  openUpdateRekamMedisDialog(id: string | undefined = 'kosong') {
+    this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
+    this.updateId = id;
+  }
+
+  async handleCreateSubmit(formData: any) {
+    try {
+      // Normalize payload: ensure numbers and arrays are sent correctly
+      const payload: any = { ...formData };
+
+      // tanggal: convert to ISO string if Date-like
+      if (payload.tanggal) {
+        try {
+          const d = new Date(payload.tanggal);
+          if (!isNaN(d.getTime())) payload.tanggal = d.toISOString();
+        } catch (e) {}
+      }
+
+      // beratBadan and suhuBadan should be numbers
+      if (payload.beratBadan !== undefined && payload.beratBadan !== null)
+        payload.beratBadan = Number(payload.beratBadan);
+      if (payload.suhuBadan !== undefined && payload.suhuBadan !== null)
+        payload.suhuBadan = Number(payload.suhuBadan);
+
+      // resep: accept comma-separated string -> array
+      if (typeof payload.resep === 'string') {
+        payload.resep = payload.resep
+          .split(',')
+          .map((r: string) => r.trim())
+          .filter((r: string) => r.length > 0);
+      }
+
+      const res = await fetch('http://localhost:3000/api/rekammedis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Data rekam medis berhasil disimpan!');
+        this.isDialogOpen = false;
+        this.rekammedisStore.fetchRekamMedis();
+      } else {
+        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
+      }
+    } catch (error) {
+      alert('Kesalahan mengirim data: ' + error);
     }
-
-    const newRecord: RekamMedisType = {
-      id: `RM${this.dataRekamMedis.length + 1}`,
-      pasienName: this.formRekamMedis.value.pasienName,
-      pasienId: this.formRekamMedis.value.pasienId || `P${this.dataRekamMedis.length + 1}`,
-      tanggal: this.formRekamMedis.value.tanggal,
-      waktu: this.formRekamMedis.value.waktu,
-      dokter: this.formRekamMedis.value.dokter,
-      keluhan: this.formRekamMedis.value.keluhan,
-      diagnosa: this.formRekamMedis.value.diagnosa,
-      tindakan: this.formRekamMedis.value.tindakan,
-      resep: this.formRekamMedis.value.resep || '',
-      catatan: this.formRekamMedis.value.catatan,
-      tensi: this.formRekamMedis.value.tensi,
-      suhu: this.formRekamMedis.value.suhu,
-      nadi: this.formRekamMedis.value.nadi,
-      berat: this.formRekamMedis.value.berat,
-    };
-
-    this.dataRekamMedis.unshift(newRecord);
-    console.log('Rekam Medis ditambahkan:', newRecord);
-    alert('Data Rekam Medis berhasil disimpan!');
-    this.isInputDialogOpen = false;
   }
 
-  openDetail(item: RekamMedisType): void {
-    this.selectedRecord = item;
-    this.isDetailDialogOpen = true;
+  trackById(index: number, item: RekamMedisModel) {
+    return item._id;
   }
 
-  closeDetailDialog(): void {
-    this.isDetailDialogOpen = false;
-    this.selectedRecord = null;
+  onSearch() {
+    this.rekammedisStore.setPagination({ currentPage: 1 });
+    this.rekammedisStore.fetchRekamMedis();
+  }
+
+  onPageChange(page: number) {
+    this.rekammedisStore.setPagination({ currentPage: page });
+    this.rekammedisStore.fetchRekamMedis();
+  }
+
+  onLimitChange(newLimit: number) {
+    this.rekammedisStore.setPagination({
+      limit: newLimit,
+      currentPage: 1,
+    });
+
+    this.rekammedisStore.fetchRekamMedis();
   }
 }

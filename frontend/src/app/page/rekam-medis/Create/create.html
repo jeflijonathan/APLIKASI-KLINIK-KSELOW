@@ -1,0 +1,129 @@
+<div class="row">
+  <app-dialog
+    title="Tambah Rekam Medis"
+    [(opened)]="isDialogOpen"
+    (submitted)="submitForm()"
+    (closed)="isDialogOpen = false; isDialogOpenChange.emit(false)"
+  >
+    <form [formGroup]="formRekamMedis">
+      <div class="form-group mb-3">
+        <label>Nama Pasien</label>
+        <input formControlName="nama" type="text" class="form-control" />
+        <div
+          *ngIf="formRekamMedis.get('nama')?.touched && formRekamMedis.get('nama')?.invalid"
+          class="text-danger"
+        >
+          Nama pasien harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Tanggal</label>
+        <input formControlName="tanggal" type="date" class="form-control" />
+        <div
+          *ngIf="formRekamMedis.get('tanggal')?.touched && formRekamMedis.get('tanggal')?.invalid"
+          class="text-danger"
+        >
+          Tanggal harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Keluhan</label>
+        <textarea formControlName="keluhan" class="form-control" rows="3"></textarea>
+        <div
+          *ngIf="formRekamMedis.get('keluhan')?.touched && formRekamMedis.get('keluhan')?.invalid"
+          class="text-danger"
+        >
+          Keluhan harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Dokter</label>
+        <input formControlName="dokter" type="text" class="form-control" />
+        <div
+          *ngIf="formRekamMedis.get('dokter')?.touched && formRekamMedis.get('dokter')?.invalid"
+          class="text-danger"
+        >
+          Dokter harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Berat Badan (kg)</label>
+        <input formControlName="beratBadan" type="number" class="form-control" />
+        <div
+          *ngIf="
+            formRekamMedis.get('beratBadan')?.touched && formRekamMedis.get('beratBadan')?.invalid
+          "
+          class="text-danger"
+        >
+          Berat badan harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Tekanan Darah</label>
+        <input formControlName="tekananDarah" type="text" class="form-control" placeholder="e.g., 120/80" />
+        <div
+          *ngIf="
+            formRekamMedis.get('tekananDarah')?.touched && formRekamMedis.get('tekananDarah')?.invalid
+          "
+          class="text-danger"
+        >
+          Tekanan darah harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Suhu Badan (°C)</label>
+        <input formControlName="suhuBadan" type="number" class="form-control" step="0.1" />
+        <div
+          *ngIf="formRekamMedis.get('suhuBadan')?.touched && formRekamMedis.get('suhuBadan')?.invalid"
+          class="text-danger"
+        >
+          Suhu badan harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Diagnosa</label>
+        <textarea formControlName="diagnosa" class="form-control" rows="3"></textarea>
+        <div
+          *ngIf="formRekamMedis.get('diagnosa')?.touched && formRekamMedis.get('diagnosa')?.invalid"
+          class="text-danger"
+        >
+          Diagnosa harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Resep</label>
+        <textarea
+          formControlName="resep"
+          class="form-control"
+          rows="3"
+          placeholder="Pisahkan resep dengan koma (,)"
+        ></textarea>
+        <div
+          *ngIf="formRekamMedis.get('resep')?.touched && formRekamMedis.get('resep')?.invalid"
+          class="text-danger"
+        >
+          Resep harus diisi.
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Catatan</label>
+        <textarea formControlName="catatan" class="form-control" rows="3"></textarea>
+        <div
+          *ngIf="formRekamMedis.get('catatan')?.touched && formRekamMedis.get('catatan')?.invalid"
+          class="text-danger"
+        >
+          Catatan harus diisi.
+        </div>
+      </div>
+    </form>
+  </app-dialog>
+</div>

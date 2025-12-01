@@ -1,0 +1,120 @@
+<div class="row">
+  <app-dialog
+    title="Ubah Data Rekam Medis"
+    [(opened)]="isDialogOpen"
+    (submitted)="submitForm()"
+    (closed)="isDialogOpen = false; isDialogOpenChange.emit(false)"
+  >
+    @if (id) {
+    <p class="text-muted mb-4"><strong>ID Rekam Medis:</strong> {{ id }}</p>
+    }
+    <form [formGroup]="formRekamMedis">
+      <div class="form-group mb-3">
+        <label>Nama Pasien</label>
+        <input formControlName="nama" type="text" class="form-control" />
+
+        @if(formRekamMedis.get('nama')?.touched && formRekamMedis.get('nama')?.invalid) {
+        <div class="text-danger">Nama harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Tanggal</label>
+        <input formControlName="tanggal" type="date" class="form-control" />
+
+        @if( formRekamMedis.get('tanggal')?.touched && formRekamMedis.get('tanggal')?.invalid) {
+        <div class="text-danger">Tanggal harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Keluhan</label>
+        <textarea formControlName="keluhan" class="form-control" rows="3"></textarea>
+
+        @if( formRekamMedis.get('keluhan')?.touched && formRekamMedis.get('keluhan')?.invalid) {
+        <div class="text-danger">Keluhan harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Dokter</label>
+        <input formControlName="dokter" type="text" class="form-control" />
+
+        @if(formRekamMedis.get('dokter')?.touched && formRekamMedis.get('dokter')?.invalid) {
+        <div class="text-danger">Dokter harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Berat Badan (kg)</label>
+        <input formControlName="beratBadan" type="number" class="form-control" />
+
+        @if(formRekamMedis.get('beratBadan')?.touched && formRekamMedis.get('beratBadan')?.invalid) {
+        <div class="text-danger">Berat badan harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Tekanan Darah</label>
+        <input formControlName="tekananDarah" type="text" class="form-control" placeholder="e.g., 120/80" />
+
+        @if(formRekamMedis.get('tekananDarah')?.touched && formRekamMedis.get('tekananDarah')?.invalid) {
+        <div class="text-danger">Tekanan darah harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Suhu Badan (°C)</label>
+        <input formControlName="suhuBadan" type="number" class="form-control" step="0.1" />
+
+        @if(formRekamMedis.get('suhuBadan')?.touched && formRekamMedis.get('suhuBadan')?.invalid) {
+        <div class="text-danger">Suhu badan harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Diagnosa</label>
+        <textarea formControlName="diagnosa" class="form-control" rows="3"></textarea>
+
+        @if(formRekamMedis.get('diagnosa')?.touched && formRekamMedis.get('diagnosa')?.invalid) {
+        <div class="text-danger">Diagnosa harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Resep</label>
+        <textarea
+          formControlName="resep"
+          class="form-control"
+          rows="3"
+          placeholder="Pisahkan resep dengan koma (,)"
+        ></textarea>
+
+        @if(formRekamMedis.get('resep')?.touched && formRekamMedis.get('resep')?.invalid) {
+        <div class="text-danger">Resep harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Catatan</label>
+        <textarea formControlName="catatan" class="form-control" rows="3"></textarea>
+
+        @if(formRekamMedis.get('catatan')?.touched && formRekamMedis.get('catatan')?.invalid) {
+        <div class="text-danger">Catatan harus diisi.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Status Aktif</label>
+        <select formControlName="isActive" class="form-control">
+          <option [ngValue]="true">Aktif</option>
+          <option [ngValue]="false">Tidak Aktif</option>
+        </select>
+
+        @if(formRekamMedis.get('isActive')?.touched && formRekamMedis.get('isActive')?.invalid) {
+        <div class="text-danger">Status harus dipilih.</div>
+        }
+      </div>
+    </form>
+  </app-dialog>
+</div>
