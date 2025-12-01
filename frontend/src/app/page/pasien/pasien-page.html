@@ -68,6 +68,7 @@
                   <th>Tanggal Lahir</th>
                   <th>Jenis Kelamin</th>
                   <th>Asuransi</th>
+                  <th>status</th>
                   <th>Tanggal Daftar</th>
                   <th>Tanggal Diperbarui</th>
                   <th>Aksi</th>
@@ -77,10 +78,20 @@
               <tbody>
                 <tr *ngFor="let pasien of dataPasien; let i = index; trackBy: trackById">
                   <td>{{ i + 1 }}</td>
-                  <td>{{ pasien.nama }} - {{ pasien._id }}</td>
+                  <td>{{ pasien.nama }}</td>
                   <td>{{ pasien.tanggal_lahir | date : 'dd/MM/yyyy' }}</td>
                   <td>{{ pasien.jenis_kelamin }}</td>
                   <td>{{ pasien.asuransi }}</td>
+                  <td>
+                    @if (pasien.isActive) {
+                    <span class="rounded-pill status-pill bg-success text-white py-1 px-3"
+                      >Active</span
+                    >
+                    } @else {
+                    <span class="rounded-pill bg-danger text-white py-1 px-3">Disable</span>
+                    }
+                  </td>
+
                   <td>{{ pasien.createdAt | date : 'dd/MM/yyyy HH:mm' }}</td>
                   <td>{{ pasien.updatedAt | date : 'dd/MM/yyyy HH:mm' }}</td>
                   <td>
