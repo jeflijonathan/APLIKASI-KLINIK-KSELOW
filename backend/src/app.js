@@ -3,6 +3,7 @@ import userRouter from "#routes/user.router.js";
 import pasienRouter from "#routes/pasien.router.js";
 import env from "dotenv";
 import DB from "#config/db.js";
+import rekamMedisRouter from "#routes/rekam_medis_router.js";
 
 env.config();
 new DB();
@@ -23,6 +24,8 @@ app.use(express.json());
 
 app.use("/api", userRouter);
 app.use("/api", pasienRouter);
+app.use("/api", rekamMedisRouter);
+
 const HOST = process.env.APP_HOST || "http://localhost";
 const PORT = process.env.APP_PORT || 3000;
 
