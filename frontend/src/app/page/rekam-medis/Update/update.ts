@@ -23,7 +23,7 @@ export type RekamMedisUpdateStateType = {
   templateUrl: './update.html',
   styleUrl: './update.css',
 })
-export class Update implements OnInit, OnChanges {
+export class Update implements  OnChanges {
   @Input() id: string = '';
   @Input() isDialogOpen = false;
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
@@ -57,16 +57,13 @@ export class Update implements OnInit, OnChanges {
     this.fetchRekamMedisById();
   }
 
-  ngOnInit(): void {
-    this.fetchRekamMedisById();
-  }
 
   async fetchRekamMedisById() {
     this.rekamMedisService.getRekamMedisById(this.id, {
       onSuccess: (data: any) => {
         this.formRekamMedis.patchValue({
-          nama: data.nama,
-          tanggal: data.tanggal,
+          nama: data.pasien?.nama,
+          tanggal: data.tanggal.substring(0, 10),
           keluhan: data.keluhan,
           dokter: data.dokter,
           beratBadan: data.beratBadan,
