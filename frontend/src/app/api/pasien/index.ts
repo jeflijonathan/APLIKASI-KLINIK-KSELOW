@@ -29,7 +29,7 @@ export class PasienService {
   }
 
   async getPasienOptions(callback: FetchCallback<DataWithPagination<PasienModel[]>>) {
-    const target = `${this.basePath}/options`;
+    const target = `/options${this.basePath}`;
     const res = await this.api.GET<PasienModel[]>(target);
 
     if (res?.status) {

@@ -11,6 +11,7 @@ import { Detail } from './Detail/Detail';
 @Component({
   selector: 'app-rekam-medis',
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule,
