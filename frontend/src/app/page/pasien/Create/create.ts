@@ -13,8 +13,7 @@ import { Dialog } from '../../../common/components/dialog/dialog';
 export class Create {
   @Input() isDialogOpen = false;
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
-
-  @Output() submitted = new EventEmitter<any>();
+  @Output() submitted = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
 
   formPasien: FormGroup;
@@ -28,18 +27,36 @@ export class Create {
     });
   }
 
-  submitForm() {
+  async submitForm() {
     this.formPasien.markAllAsTouched();
 
     if (this.formPasien.invalid) {
       alert('Harap isi semua field yang wajib diisi!');
       return;
     }
+    const formData = this.formPasien.value;
 
-    this.submitted.emit(this.formPasien.value);
+    try {
+      const res = await fetch('http://localhost:3000/api/pasien', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    this.formPasien.reset();
-    this.isDialogOpen = false;
-    this.isDialogOpenChange.emit(false);
+      const data = await res.json();
+
+      if (res.ok) {
+        alert('Data pasien berhasil disimpan!');
+        
+        this.formPasien.reset();
+        this.isDialogOpen = false;
+        this.isDialogOpenChange.emit(false);
+        this.submitted.emit(); 
+      } else {
+        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
+      }
+    } catch (error) {
+      alert('Kesalahan mengirim data: ' + error);
+    }
   }
 }

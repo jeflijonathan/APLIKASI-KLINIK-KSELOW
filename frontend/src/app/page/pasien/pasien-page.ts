@@ -46,26 +46,9 @@ export class PasienPage implements OnInit {
     this.updateId = id;
   }
 
-  async handleCreateSubmit(formData: PasienModel) {
-    try {
-      const res = await fetch('http://localhost:3000/api/pasien', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('Data pasien berhasil disimpan!');
-        this.isDialogOpen = false;
-        this.pasienStore.fetchPasien();
-      } else {
-        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
-      }
-    } catch (error) {
-      alert('Kesalahan mengirim data: ' + error);
-    }
+  onPasienSaved() {
+  this.isDialogOpen = false;
+  this.pasienStore.fetchPasien();
   }
 
   trackById(index: number, item: PasienModel) {
