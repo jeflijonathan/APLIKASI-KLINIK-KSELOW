@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { PasienPage } from './page/pasien/pasien-page';
 import { LayoutMain } from './layout/main/layout-main';
 import { RekamMedisPage } from './page/rekam-medis/rekam-medis';
+import { UserPage } from './page/user/user';
 
 export const routes: Routes = [
   {
@@ -10,6 +11,7 @@ export const routes: Routes = [
     children: [
       { path: 'pasien', component: PasienPage },
       { path: 'rekam-medis', component: RekamMedisPage },
+      { path: 'user', component: UserPage },
     ],
   },
 ];

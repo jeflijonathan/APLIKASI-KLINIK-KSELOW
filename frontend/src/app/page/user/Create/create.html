@@ -1,0 +1,223 @@
+<div class="row">
+  <app-dialog
+    title="Tambah User Baru"
+    [(opened)]="isDialogOpen"
+    (submitted)="submitForm()"
+    (closed)="closeDialog()"
+  >
+    <form [formGroup]="formUser">
+      <div class="row">
+        <div class="col-md-6 form-group mb-3">
+          <label>Nama Lengkap <span class="text-danger">*</span></label>
+          <input formControlName="username" type="text" class="form-control" placeholder="Masukkan nama lengkap" />
+          @if(formUser.get('username')?.touched && formUser.get('username')?.invalid) {
+          <div class="text-danger small mt-1">Username harus diisi.</div>
+          }
+        </div>
+
+        <div class="col-md-6 form-group mb-3">
+          <label>Email <span class="text-danger">*</span></label>
+          <input formControlName="email" type="email" class="form-control" placeholder="email@kliniksehat.com" />
+          @if(formUser.get('email')?.touched && formUser.get('email')?.invalid) {
+          <div class="text-danger small mt-1">
+            @if(formUser.get('email')?.errors?.['required']) {
+              Email harus diisi.
+            } @else if(formUser.get('email')?.errors?.['email']) {
+              Format email tidak valid.
+            }
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 form-group mb-3">
+          <label>Password <span class="text-danger">*</span></label>
+          <input formControlName="password" type="password" class="form-control" placeholder="Minimal 8 karakter" />
+          @if(formUser.get('password')?.touched && formUser.get('password')?.invalid) {
+          <div class="text-danger small mt-1">
+            @if(formUser.get('password')?.errors?.['required']) {
+              Password harus diisi.
+            } @else if(formUser.get('password')?.errors?.['minlength']) {
+              Password minimal 8 karakter.
+            }
+          </div>
+          }
+        </div>
+
+        <div class="col-md-6 form-group mb-3">
+          <label>Konfirmasi Password <span class="text-danger">*</span></label>
+          <input type="password" class="form-control" placeholder="Ulangi password" />
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Role / Jabatan <span class="text-danger">*</span></label>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="admin" 
+                    [value]="'ADMIN'"
+                    formControlName="role"
+                  />
+                  <label class="form-check-label" for="admin">
+                    <strong>Admin</strong>
+                  </label>
+                </div>
+                <div class="text-muted small mt-2">
+                  <ul class="ps-3 mb-0">
+                    <li>Akses penuh ke semua fitur</li>
+                    <li>Kelola user dan akses</li>
+                    <li>Lihat semua laporan</li>
+                    <li>Setting sistem</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="dokter" 
+                    [value]="'DOKTER'"
+                    formControlName="role"
+                  />
+                  <label class="form-check-label" for="dokter">
+                    <strong>Dokter</strong>
+                  </label>
+                </div>
+                <div class="text-muted small mt-2">
+                  <ul class="ps-3 mb-0">
+                    <li>Kelola rekam medis pasien</li>
+                    <li>Input diagnosis dan resep</li>
+                    <li>Lihat jadwal praktik</li>
+                    <li>Lihat laporan pasien sendiri</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="perawat" 
+                    [value]="'PERAWAT'"
+                    formControlName="role"
+                  />
+                  <label class="form-check-label" for="perawat">
+                    <strong>Perawat</strong>
+                  </label>
+                </div>
+                <div class="text-muted small mt-2">
+                  <ul class="ps-3 mb-0">
+                    <li>Input data pasien</li>
+                    <li>Kelola antrian</li>
+                    <li>Input tanda vital</li>
+                    <li>Lihat jadwal dokter</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="form-check">
+                  <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    id="kasir" 
+                    [value]="'KASIR'"
+                    formControlName="role"
+                  />
+                  <label class="form-check-label" for="kasir">
+                    <strong>Kasir</strong>
+                  </label>
+                </div>
+                <div class="text-muted small mt-2">
+                  <ul class="ps-3 mb-0">
+                    <li>Proses pembayaran</li>
+                    <li>Cetak invoice</li>
+                    <li>Lihat laporan pembayaran</li>
+                    <li>Kelola stok obat</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        @if(formUser.get('role')?.touched && formUser.get('role')?.invalid) {
+        <div class="text-danger small">Role harus dipilih.</div>
+        }
+      </div>
+
+      <div class="form-group mb-3">
+        <label>Status <span class="text-danger">*</span></label>
+        <div class="form-check">
+          <input 
+            class="form-check-input" 
+            type="radio" 
+            id="aktif" 
+            [value]="true"
+            formControlName="isActive"
+          />
+          <label class="form-check-label" for="aktif">
+            Aktif
+          </label>
+        </div>
+        <div class="form-check">
+          <input 
+            class="form-check-input" 
+            type="radio" 
+            id="nonaktif" 
+            [value]="false"
+            formControlName="isActive"
+          />
+          <label class="form-check-label" for="nonaktif">
+            Non-aktif
+          </label>
+        </div>
+      </div>
+
+      <div class="alert alert-warning small mb-0">
+        <strong>Catatan:</strong> User baru akan menerima email berisi informasi akun dan password. Pastikan email yang dimasukkan valid dan aktif.
+      </div>
+
+      @if(formUser.invalid && formUser.touched) {
+      <div class="alert alert-danger mt-3 mb-0">
+        <strong>⚠️ Form masih ada yang belum benar:</strong>
+        <ul class="mb-0 mt-2">
+          @if(formUser.get('username')?.invalid) {
+            <li>Nama Lengkap harus diisi</li>
+          }
+          @if(formUser.get('email')?.invalid) {
+            <li>Email harus valid (format: email@domain.com)</li>
+          }
+          @if(formUser.get('password')?.invalid) {
+            <li>Password minimal 8 karakter</li>
+          }
+          @if(formUser.get('role')?.invalid) {
+            <li>Pilih salah satu Role</li>
+          }
+        </ul>
+      </div>
+      }
+    </form>
+  </app-dialog>
+</div>
