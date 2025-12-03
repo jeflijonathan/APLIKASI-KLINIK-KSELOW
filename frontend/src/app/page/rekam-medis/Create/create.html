@@ -8,13 +8,17 @@
     <form [formGroup]="formRekamMedis">
       <div class="form-group mb-3">
         <label>Nama Pasien</label>
-        <input formControlName="nama" type="text" class="form-control" />
-        <div
-          *ngIf="formRekamMedis.get('nama')?.touched && formRekamMedis.get('nama')?.invalid"
-          class="text-danger"
-        >
-          Nama pasien harus diisi.
-        </div>
+
+        <select formControlName="pasien" class="form-control">
+          <option [ngValue]="null">-- Pilih Pasien --</option>
+
+          @for(p of getState.pasienList; track p._id) {
+          <option [ngValue]="p._id">{{ p.nama }}</option>
+          }
+        </select>
+        @if(formRekamMedis.get('pasien')?.touched && formRekamMedis.get('pasien')?.invalid) {
+        <div class="text-danger">Nama harus diisi.</div>
+        }
       </div>
 
       <div class="form-group mb-3">
@@ -65,10 +69,16 @@
 
       <div class="form-group mb-3">
         <label>Tekanan Darah</label>
-        <input formControlName="tekananDarah" type="text" class="form-control" placeholder="e.g., 120/80" />
+        <input
+          formControlName="tekananDarah"
+          type="text"
+          class="form-control"
+          placeholder="e.g., 120/80"
+        />
         <div
           *ngIf="
-            formRekamMedis.get('tekananDarah')?.touched && formRekamMedis.get('tekananDarah')?.invalid
+            formRekamMedis.get('tekananDarah')?.touched &&
+            formRekamMedis.get('tekananDarah')?.invalid
           "
           class="text-danger"
         >
@@ -80,7 +90,9 @@
         <label>Suhu Badan (°C)</label>
         <input formControlName="suhuBadan" type="number" class="form-control" step="0.1" />
         <div
-          *ngIf="formRekamMedis.get('suhuBadan')?.touched && formRekamMedis.get('suhuBadan')?.invalid"
+          *ngIf="
+            formRekamMedis.get('suhuBadan')?.touched && formRekamMedis.get('suhuBadan')?.invalid
+          "
           class="text-danger"
         >
           Suhu badan harus diisi.

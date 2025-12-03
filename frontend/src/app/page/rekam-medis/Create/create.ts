@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Dialog } from '../../../common/components/dialog/dialog';
 import RekamMedisService from '../../../api/rekammedis';
 import { RekammedisStore } from '../List/hook/rekammedis.store';
+import { PasienStore } from '../List/hook/pasien.store';
 
 @Component({
   selector: 'app-create-rekam-medis',
@@ -12,7 +13,7 @@ import { RekammedisStore } from '../List/hook/rekammedis.store';
   templateUrl: './create.html',
   styleUrl: './create.css',
 })
-export class Create {
+export class Create implements OnInit {
   @Input() isDialogOpen = false;
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
 
@@ -23,10 +24,11 @@ export class Create {
   constructor(
     private fb: FormBuilder,
     public rekammedisService: RekamMedisService,
-    public rekammedisStore: RekammedisStore
+    public rekammedisStore: RekammedisStore,
+    public pasienStore: PasienStore
   ) {
     this.formRekamMedis = this.fb.group({
-      nama: ['', Validators.required],
+      pasien: ['', Validators.required],
       tanggal: ['', Validators.required],
       keluhan: ['', Validators.required],
       dokter: ['', Validators.required],
@@ -38,7 +40,12 @@ export class Create {
       catatan: ['', Validators.required],
     });
   }
-
+  ngOnInit() {
+    this.pasienStore.fetchPasienOptions();
+  }
+  get getState() {
+    return this.pasienStore.getState();
+  }
   submitForm() {
     this.formRekamMedis.markAllAsTouched();
 
