@@ -67,12 +67,12 @@ class RekamMedisService {
     callback?.onFullfilled && callback.onFullfilled();
   }
 
-  async deleteRekamMedis(id: string, callback: FetchCallback<null>) {
+  async deleteRekamMedis(id: string, callback: FetchCallback<[]>) {
     const target = `${this.basePath}/${id}`;
-    const res = await this.api.DELETE<null>(target);
+    const res = await this.api.DELETE<[]>(target);
 
     if (res?.status) {
-      callback.onSuccess(null);
+      callback.onSuccess([]);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }

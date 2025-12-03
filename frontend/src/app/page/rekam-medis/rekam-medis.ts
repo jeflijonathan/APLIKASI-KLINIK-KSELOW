@@ -5,11 +5,12 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
 import { Update } from './Update/update';
+import { Delete } from './Delete/Delete';
 
 @Component({
   selector: 'app-rekam-medis',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update, Delete],
   templateUrl: './rekam-medis.html',
   styleUrls: ['./rekam-medis.css'],
 })

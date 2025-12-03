@@ -279,11 +279,14 @@ class RekamMedisController {
       }
 
       res.status(200).json({
+        status: true,
+        statusCode: 200,
         message: "Rekam medis berhasil dihapus",
         data,
       });
     } catch (error) {
       res.status(500).json({
+        status: false,
         message: error.message,
       });
     }

@@ -79,19 +79,23 @@
               <tbody>
                 <tr *ngFor="let rekammedis of dataRekamMedis; let i = index; trackBy: trackById">
                   <td>{{ i + 1 }}</td>
-                  <td>{{ rekammedis.pasien.nama }} - {{ rekammedis._id }}</td>
+                  <td>{{ rekammedis.pasien.nama }}</td>
                   <td>{{ rekammedis.tanggal | date : 'dd/MM/yyyy' }}</td>
                   <td>{{ rekammedis.dokter }}</td>
                   <td>{{ rekammedis.keluhan }}</td>
                   <td>{{ rekammedis.diagnosa }}</td>
                   <td>{{ rekammedis.createdAt | date : 'dd/MM/yyyy HH:mm' }}</td>
                   <td>
-                    <button
-                      class="btn btn-sm btn-warning me-2"
-                      (click)="openUpdateRekamMedisDialog(String(rekammedis._id))"
-                    >
-                      Edit
-                    </button>
+                    <div class="d-flex gap-3">
+                      <app-delete [id]="rekammedis._id.toString()"></app-delete>
+
+                      <button
+                        class="btn btn-sm btn-warning me-2"
+                        (click)="openUpdateRekamMedisDialog(String(rekammedis._id))"
+                      >
+                        Edit
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
