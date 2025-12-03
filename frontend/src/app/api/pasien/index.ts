@@ -28,6 +28,22 @@ export class PasienService {
     callback?.onFullfilled && callback.onFullfilled();
   }
 
+  async getPasienOptions(callback: FetchCallback<DataWithPagination<PasienModel[]>>) {
+    const target = `${this.basePath}/options`;
+    const res = await this.api.GET<PasienModel[]>(target);
+
+    if (res?.status) {
+      callback.onSuccess({
+        data: res.data,
+        pagination: res.pagination!,
+      });
+    } else {
+      callback.onError(res?.message || 'Unknown Error');
+    }
+
+    callback?.onFullfilled && callback.onFullfilled();
+  }
+
   async getPasienById(id: string, callback: FetchCallback<PasienUpdateModel>) {
     const target = `${this.basePath}/${id}`;
     const res = await this.api.GET<PasienUpdateModel>(target);

@@ -27,6 +27,10 @@ export class Dialog {
     }
   }
 
+  get hasSubmit(): boolean {
+    return this.submitted.observers.length > 0;
+  }
+
   onCancel() {
     if (this.dialogRef) {
       this.dialogRef.close(false);

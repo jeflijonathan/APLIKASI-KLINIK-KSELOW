@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { PasienPage } from './page/pasien/pasien-page';
 import { LayoutMain } from './layout/main/layout-main';
-import { RekamMedis } from './page/rekam-medis/rekam-medis';
+import { RekamMedisPage } from './page/rekam-medis/rekam-medis';
 
 export const routes: Routes = [
   {
@@ -9,7 +9,7 @@ export const routes: Routes = [
     component: LayoutMain,
     children: [
       { path: 'pasien', component: PasienPage },
-      { path: 'rekam-medis', component: RekamMedis },
+      { path: 'rekam-medis', component: RekamMedisPage },
     ],
   },
 ];

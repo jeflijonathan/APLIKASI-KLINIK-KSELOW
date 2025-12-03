@@ -80,11 +80,17 @@ class PasienController {
         data: pasien,
       });
     } catch (err) {
-      res.json({
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
+
+      res.status(statusCode).json({
         status: false,
-        statusCode: 500,
-        message: "Internal Server Error",
-        details: err.message,
+        statusCode: statusCode,
+        message: message,
+        details: details,
       });
     }
   }
@@ -135,21 +141,17 @@ class PasienController {
       });
     } catch (err) {
       console.error(err);
-      let statusCode = 500;
-      let message = "Failed to create pasien";
-
-      if (err.name === "ValidationError") {
-        statusCode = 400;
-        message = err.message;
-      } else if (err.statusCode) {
-        statusCode = err.statusCode;
-        message = err.message;
-      }
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
 
       res.status(statusCode).json({
         status: false,
         statusCode: statusCode,
         message: message,
+        details: details,
       });
     }
   }
@@ -222,6 +224,36 @@ class PasienController {
         data: pasien,
       });
     } catch (err) {
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
+
+      res.status(statusCode).json({
+        status: false,
+        statusCode: statusCode,
+        message: message,
+        details: details,
+      });
+    }
+  }
+
+  static async getPasienOptions(req, res) {
+    try {
+      const data = await pasienSchema.find({}).select({ _id: 1, nama: 1 });
+      res.status(200).json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully Fetched Pasien Options",
+        data,
+      });
+    } catch (err) {
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
       console.error(err);
       let statusCode = 500;
       let message = "Failed to update pasien";
@@ -241,6 +273,7 @@ class PasienController {
         status: false,
         statusCode: statusCode,
         message: message,
+        details: details,
       });
     }
   }

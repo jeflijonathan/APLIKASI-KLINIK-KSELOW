@@ -77,8 +77,9 @@ class RekamMedisController {
 
   static async create(req, res) {
     try {
-      const {
+      let {
         pasien,
+        nama,
         tanggal,
         keluhan,
         dokter,
@@ -91,8 +92,6 @@ class RekamMedisController {
       } = req.body;
 
       let errorDetails = [];
-      if (!pasien || pasien == "" || pasien == null)
-        errorDetails.push("pasien is required");
       if (!keluhan) errorDetails.push("keluhan is required");
       if (!dokter) errorDetails.push("dokter is required");
       if (!beratBadan) errorDetails.push("beratBadan is required");
@@ -100,8 +99,26 @@ class RekamMedisController {
       if (!suhuBadan) errorDetails.push("suhuBadan is required");
       if (!diagnosa) errorDetails.push("diagnosa is required");
 
-      const pasienExist = await Pasien.findById(pasien);
-      if (!pasienExist) errorDetails.push("pasien tidak ditemukan!");
+      if ((!pasien || pasien === "" || pasien == null) && nama) {
+        const nameTrim = String(nama).trim();
+        let pasienByName = await Pasien.findOne({
+          nama: { $regex: `^${nameTrim}$`, $options: "i" },
+        });
+
+        if (!pasienByName) {
+          pasienByName = await Pasien.findOne({
+            nama: { $regex: nameTrim, $options: "i" },
+          });
+        }
+        if (pasienByName) pasien = pasienByName._id;
+      }
+
+      if (!pasien || pasien == "" || pasien == null) {
+        errorDetails.push("pasien is required");
+      }
+
+      const pasienExist = pasien ? await Pasien.findById(pasien) : null;
+      if (pasien && !pasienExist) errorDetails.push("pasien tidak ditemukan!");
 
       if (errorDetails.length > 0) {
         return res.status(400).json({
@@ -110,6 +127,16 @@ class RekamMedisController {
           message: "Bad Request",
           details: errorDetails,
         });
+      }
+
+      let resepData = [];
+      if (Array.isArray(resep)) {
+        resepData = resep;
+      } else if (typeof resep === "string") {
+        resepData = resep
+          .split(",")
+          .map((r) => r.trim())
+          .filter((r) => r.length > 0);
       }
 
       const rekam = new RekamMedis({
@@ -121,7 +148,7 @@ class RekamMedisController {
         tekananDarah,
         suhuBadan,
         diagnosa,
-        resep: resep || [],
+        resep: resepData,
         catatan: catatan || "",
       });
 
@@ -147,6 +174,7 @@ class RekamMedisController {
     try {
       const { id } = req.params;
       const {
+        pasien,
         keluhan,
         dokter,
         beratBadan,
@@ -170,6 +198,11 @@ class RekamMedisController {
         if (dokter === "") errorDetails.push("dokter tidak boleh kosong");
         else updateData.dokter = dokter;
       }
+      if (pasien !== undefined) {
+        const pasienExist = await Pasien.findById(pasien);
+        if (!pasienExist) errorDetails.push("pasien tidak ditemukan");
+        else updateData.pasien = pasien;
+      }
 
       if (beratBadan !== undefined) updateData.beratBadan = beratBadan;
       if (tekananDarah !== undefined) updateData.tekananDarah = tekananDarah;
@@ -180,7 +213,17 @@ class RekamMedisController {
         else updateData.diagnosa = diagnosa;
       }
 
-      if (resep !== undefined) updateData.resep = resep;
+      if (resep !== undefined) {
+        if (Array.isArray(resep)) {
+          updateData.resep = resep;
+        } else if (typeof resep === "string") {
+          updateData.resep = resep
+            .split(",")
+            .map((r) => r.trim())
+            .filter((r) => r.length > 0);
+        }
+      }
+
       if (catatan !== undefined) updateData.catatan = catatan;
 
       if (isActive !== undefined) updateData.isActive = isActive;
@@ -236,11 +279,14 @@ class RekamMedisController {
       }
 
       res.status(200).json({
+        status: true,
+        statusCode: 200,
         message: "Rekam medis berhasil dihapus",
         data,
       });
     } catch (error) {
       res.status(500).json({
+        status: false,
         message: error.message,
       });
     }
