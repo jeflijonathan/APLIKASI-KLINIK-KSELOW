@@ -9,9 +9,10 @@ import {
   Validators,
 } from '@angular/forms';
 import RekamMedisService from '../../../api/rekammedis';
-import { RekamMedisFormUpdateModel, RekamMedisUpdateModel } from '../../../api/rekammedis/model';
+import { RekamMedisUpdateModel } from '../../../api/rekammedis/model';
 import { CommonModule } from '@angular/common';
 import { PasienStore } from '../List/hook/pasien.store';
+import { RekammedisStore } from '../List/hook/rekammedis.store';
 
 export type RekamMedisUpdateStateType = {
   rekamMedis: RekamMedisUpdateModel;
@@ -41,7 +42,8 @@ export class Update implements OnInit, OnChanges {
   constructor(
     private fb: FormBuilder,
     private rekamMedisService: RekamMedisService,
-    public pasien: PasienStore
+    public pasien: PasienStore,
+    public rekammedisStore: RekammedisStore
   ) {
     this.formRekamMedis = this.fb.group({
       pasien: ['', Validators.required],
@@ -108,6 +110,7 @@ export class Update implements OnInit, OnChanges {
 
     this.rekamMedisService.updateRekamMedis(this.id, updateData, {
       onSuccess: () => {
+        this.rekammedisStore.fetchRekamMedis();
         alert('Successfully Update Data');
       },
       onError: (err: any) => {

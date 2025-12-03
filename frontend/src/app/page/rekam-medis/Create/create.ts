@@ -57,15 +57,6 @@ export class Create implements OnInit {
 
     const createData = this.formRekamMedis.value as RekamMedisCreateModel;
 
-    // if (createData.tanggal) {
-    //   try {
-    //     const d = new Date(createData.tanggal);
-    //     if (!isNaN(d.getTime())) createData.tanggal = d.toISOString();
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    // }
-
     createData.beratBadan = Number(createData.beratBadan);
     createData.suhuBadan = Number(createData.suhuBadan);
 
@@ -83,7 +74,6 @@ export class Create implements OnInit {
       createData
     );
 
-    // this.formRekamMedis.reset();
     this.isDialogOpen = false;
     this.isDialogOpenChange.emit(false);
   }
