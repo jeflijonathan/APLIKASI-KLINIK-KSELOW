@@ -5,6 +5,7 @@ import { Dialog } from '../../../common/components/dialog/dialog';
 import RekamMedisService from '../../../api/rekammedis';
 import { RekammedisStore } from '../List/hook/rekammedis.store';
 import { PasienStore } from '../List/hook/pasien.store';
+import { RekamMedisCreateModel, RekamMedisUpdateModel } from '../../../api/rekammedis/model';
 
 @Component({
   selector: 'app-create-rekam-medis',
@@ -54,24 +55,19 @@ export class Create implements OnInit {
       return;
     }
 
-    const payload: any = { ...this.formRekamMedis.value };
+    const createData = this.formRekamMedis.value as RekamMedisCreateModel;
 
-    if (payload.tanggal) {
-      try {
-        const d = new Date(payload.tanggal);
-        if (!isNaN(d.getTime())) payload.tanggal = d.toISOString();
-      } catch (e) {}
-    }
+    // if (createData.tanggal) {
+    //   try {
+    //     const d = new Date(createData.tanggal);
+    //     if (!isNaN(d.getTime())) createData.tanggal = d.toISOString();
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    // }
 
-    payload.beratBadan = Number(payload.beratBadan);
-    payload.suhuBadan = Number(payload.suhuBadan);
-
-    if (typeof payload.resep === 'string') {
-      payload.resep = payload.resep
-        .split(',')
-        .map((r: string) => r.trim())
-        .filter((r: string) => r.length > 0);
-    }
+    createData.beratBadan = Number(createData.beratBadan);
+    createData.suhuBadan = Number(createData.suhuBadan);
 
     this.rekammedisService.createRekamMedis(
       {
@@ -84,7 +80,7 @@ export class Create implements OnInit {
           alert('Error: ' + (err || 'Gagal menyimpan data'));
         },
       },
-      payload
+      createData
     );
 
     // this.formRekamMedis.reset();
