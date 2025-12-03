@@ -9,7 +9,7 @@ import { Update } from './Update/update';
 @Component({
   selector: 'app-pasien-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update],
+  imports: [FormsModule, DatePipe, ReactiveFormsModule, CommonModule, Create, Update],
   templateUrl: './pasien-page.html',
   styleUrls: ['./pasien-page.css'],
 })

@@ -1,60 +1,70 @@
-<div class="row">
-  <app-dialog
-    title="Ubah Data Pasien"
-    [(opened)]="isDialogOpen"
-    (submitted)="submitForm()"
-    (closed)="isDialogOpen = false; isDialogOpenChange.emit(false)"
-  >
-    @if (id) {
-    <p class="text-muted mb-4"><strong>ID Pasien:</strong> {{ id }}</p>
-    }
-    <form [formGroup]="formPasien">
-      <div class="form-group mb-3">
-        <label>Nama Pasien</label>
-        <input formControlName="nama" type="text" class="form-control" />
+<app-dialog
+  title="Ubah Data Pasien"
+  [(opened)]="isDialogOpen"
+  (submitted)="submitForm()"
+  (closed)="isDialogOpen = false; isDialogOpenChange.emit(false)"
+>
+  @if (id) {
+  <p class="text-muted mb-4"><strong>ID Pasien:</strong> {{ id }}</p>
+  }
 
-        @if(formPasien.get('nama')?.touched && formPasien.get('nama')?.invalid) {
-        <div class="text-danger">Nama harus diisi.</div>
-        }
-      </div>
+  <form [formGroup]="formPasien">
+    <div class="form-group mb-3">
+      <label>Nama Pasien</label>
+      <input formControlName="nama" type="text" class="form-control" />
 
-      <div class="form-group mb-3">
-        <label>Tanggal Lahir</label>
-        <input formControlName="tanggal_lahir" type="date" class="form-control" />
+      @if(formPasien.get('nama')?.touched && formPasien.get('nama')?.invalid) {
+      <div class="text-danger">Nama harus diisi.</div>
+      }
+    </div>
 
-        @if( formPasien.get('tanggal_lahir')?.touched && formPasien.get('tanggal_lahir')?.invalid) {
-        <div class="text-danger">Tanggal lahir harus diisi.</div>
-        }
-      </div>
+    <div class="form-group mb-3">
+      <label>Tanggal Lahir</label>
+      <input formControlName="tanggal_lahir" type="date" class="form-control" />
 
-      <div class="form-group mb-3">
-        <label>Jenis Kelamin</label>
-        <select formControlName="jenis_kelamin" class="form-control">
-          <option value="">-- Pilih Jenis Kelamin --</option>
-          <option value="Laki-laki">Laki-laki</option>
-          <option value="Perempuan">Perempuan</option>
-        </select>
+      @if(formPasien.get('tanggal_lahir')?.touched && formPasien.get('tanggal_lahir')?.invalid) {
+      <div class="text-danger">Tanggal lahir harus diisi.</div>
+      }
+    </div>
 
-        @if( formPasien.get('jenis_kelamin')?.touched && formPasien.get('jenis_kelamin')?.invalid) {
-        <div class="text-danger">Jenis kelamin harus dipilih.</div>
-        }
-      </div>
+    <div class="form-group mb-3">
+      <label>Jenis Kelamin</label>
+      <select formControlName="jenis_kelamin" class="form-control">
+        <option value="">-- Pilih Jenis Kelamin --</option>
+        <option value="Laki-laki">Laki-laki</option>
+        <option value="Perempuan">Perempuan</option>
+      </select>
 
-      <div class="form-group mb-3">
-        <label>Asuransi</label>
-        <select formControlName="asuransi" class="form-control">
-          <option value="">-- Pilih Asuransi --</option>
-          <option value="BPJS Kesehatan">BPJS Kesehatan</option>
-          <option value="Asuransi Swasta">Asuransi Swasta</option>
-          <option value="Mandiri Inhealth">Mandiri Inhealth</option>
-          <option value="Tidak Ada">Tidak Ada</option>
-        </select>
+      @if(formPasien.get('jenis_kelamin')?.touched && formPasien.get('jenis_kelamin')?.invalid) {
+      <div class="text-danger">Jenis kelamin harus dipilih.</div>
+      }
+    </div>
 
-        @if(formPasien.get('asuransi')?.touched && formPasien.get('asuransi')?.invalid) {
-        <div class="text-danger">Asuransi harus dipilih.</div>
-        }
-      </div>
-      <!-- {{ state?.pasien?.name }} -->
-    </form>
-  </app-dialog>
-</div>
+    <div class="form-group mb-3">
+      <label>Asuransi</label>
+      <select formControlName="asuransi" class="form-control">
+        <option value="">-- Pilih Asuransi --</option>
+        <option value="BPJS Kesehatan">BPJS Kesehatan</option>
+        <option value="Asuransi Swasta">Asuransi Swasta</option>
+        <option value="Mandiri Inhealth">Mandiri Inhealth</option>
+        <option value="Tidak Ada">Tidak Ada</option>
+      </select>
+
+      @if(formPasien.get('asuransi')?.touched && formPasien.get('asuransi')?.invalid) {
+      <div class="text-danger">Asuransi harus dipilih.</div>
+      }
+    </div>
+
+    <div class="form-group mb-3">
+      <label>Status Aktif</label>
+      <select formControlName="isActive" class="form-control">
+        <option [ngValue]="true">Aktif</option>
+        <option [ngValue]="false">Tidak Aktif</option>
+      </select>
+
+      @if(formPasien.get('isActive')?.touched && formPasien.get('isActive')?.invalid) {
+      <div class="text-danger">Status harus dipilih.</div>
+      }
+    </div>
+  </form>
+</app-dialog>

@@ -155,6 +155,7 @@ class PasienController {
       });
     }
   }
+
   static async updatePasien(req, res) {
     try {
       const { id } = req.params;
@@ -253,6 +254,20 @@ class PasienController {
         message = "Failed to update pasien",
         details,
       } = err;
+      console.error(err);
+      let statusCode = 500;
+      let message = "Failed to update pasien";
+
+      if (err.name === "ValidationError") {
+        statusCode = 400;
+        message = err.message;
+      } else if (err.name === "CastError") {
+        statusCode = 400;
+        message = "Invalid Pasien ID format";
+      } else if (err.statusCode) {
+        statusCode = err.statusCode;
+        message = err.message;
+      }
 
       res.status(statusCode).json({
         status: false,

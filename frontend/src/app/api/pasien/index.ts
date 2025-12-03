@@ -76,7 +76,7 @@ export class PasienService {
     callback: FetchCallback<PasienUpdateModel>
   ) {
     const target = `${this.basePath}/${id}`;
-    const res = await this.api.POST<PasienUpdateModel>(target, data);
+    const res = await this.api.PUT<PasienUpdateModel>(target, data);
 
     if (res?.status) {
       callback.onSuccess(res.data);
