@@ -1,13 +1,7 @@
 import { Component, Input, OnInit, Output, signal, SimpleChanges, OnChanges } from '@angular/core';
 import { EventEmitter } from '@angular/core';
 import { Dialog } from '../../../common/components/dialog/dialog';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import RekamMedisService from '../../../api/rekammedis';
 import { RekamMedisUpdateModel } from '../../../api/rekammedis/model';
 import { CommonModule } from '@angular/common';

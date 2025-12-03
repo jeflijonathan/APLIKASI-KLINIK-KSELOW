@@ -5,7 +5,7 @@ import { Dialog } from '../../../common/components/dialog/dialog';
 import RekamMedisService from '../../../api/rekammedis';
 import { RekammedisStore } from '../List/hook/rekammedis.store';
 import { PasienStore } from '../List/hook/pasien.store';
-import { RekamMedisCreateModel, RekamMedisUpdateModel } from '../../../api/rekammedis/model';
+import { RekamMedisCreateModel } from '../../../api/rekammedis/model';
 
 @Component({
   selector: 'app-create-rekam-medis',
