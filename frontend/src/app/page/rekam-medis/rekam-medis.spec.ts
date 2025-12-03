@@ -19,3 +19,4 @@ describe('RekamMedisPage', () => {
     expect(component).toBeTruthy();
   });
 });
+  

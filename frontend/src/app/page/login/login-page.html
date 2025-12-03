@@ -1,0 +1,13 @@
+<div class="login-container">
+  <form (submit)="login($event)" class="login-form">
+    <h2>Login</h2>
+
+    <label for="identifier">Username or Email</label>
+    <input id="identifier" type="text" [(ngModel)]="identifier" name="identifier" required />
+
+    <label for="password">Password</label>
+    <input id="password" type="password" [(ngModel)]="password" name="password" required />
+
+    <button type="submit">Login</button>
+  </form>
+</div>
