@@ -1,54 +1,60 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
-import { FilterType } from '../common/type';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { APIResponse } from '../common/type';
+@Injectable({
+  providedIn: 'root',
+})
+export class API {
+  private baseURL = `http://localhost:3000/api`;
 
-@Injectable({ providedIn: 'root' })
-export class ApiService {
-  base;
-  header;
+  private headers = new HttpHeaders({
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  });
 
-  constructor(private http: HttpClient) {
-    this.base = 'http://localhost:3000';
-    this.header = {
-      'Content-Type': 'application/json',
-    };
+  constructor(private http: HttpClient) {}
+
+  private async toPromise<T>(request: any): Promise<T> {
+    return await firstValueFrom(
+      request.pipe(
+        catchError((err) => {
+          return throwError(() => err.error || err);
+        })
+      )
+    );
   }
 
-  async GET(path: string, params: FilterType) {
-    try {
-      const headers = new HttpHeaders(this.header);
-      return await firstValueFrom(this.http.get(this.base + path, { headers }));
-    } catch (err) {
-      console.error('GET error:', err);
-      return null;
-    }
+  async GET<T>(path: string, params?: any): Promise<APIResponse<T>> {
+    const req = this.http.get<APIResponse<T>>(`${this.baseURL}${path}`, {
+      headers: this.headers,
+      params,
+    });
+
+    return this.toPromise<APIResponse<T>>(req);
   }
 
-  async POST(path: string, body: any) {
-    try {
-      return await firstValueFrom(this.http.post(this.base + path, body));
-    } catch (err) {
-      console.error('POST error:', err);
-      return null;
-    }
+  async POST<T>(path: string, body: any): Promise<APIResponse<T>> {
+    const req = this.http.post<T>(`${this.baseURL}${path}`, body, {
+      headers: this.headers,
+    });
+
+    return this.toPromise<APIResponse<T>>(req);
   }
 
-  async PUT(path: string, body: any) {
-    try {
-      return await firstValueFrom(this.http.put(this.base + path, body));
-    } catch (err) {
-      console.error('PUT error:', err);
-      return null;
-    }
+  async PUT<T>(path: string, body: any): Promise<APIResponse<T>> {
+    const req = this.http.put<T>(`${this.baseURL}${path}`, body, {
+      headers: this.headers,
+    });
+
+    return this.toPromise<APIResponse<T>>(req);
   }
 
-  async DELETE(path: string) {
-    try {
-      return await firstValueFrom(this.http.delete(this.base + path));
-    } catch (err) {
-      console.error('DELETE error:', err);
-      return null;
-    }
+  async DELETE<T>(path: string): Promise<APIResponse<T>> {
+    const req = this.http.delete<T>(`${this.baseURL}${path}`, {
+      headers: this.headers,
+    });
+
+    return this.toPromise<APIResponse<T>>(req);
   }
 }

@@ -1,231 +1,161 @@
-<!-- <div class="page-container">
-  <header class="page-header">
-    <h1>Rekam Medis</h1>
-    <p class="subtitle">Kelola rekam medis dan riwayat pemeriksaan pasien</p>
-  </header>
-
-  <div class="toolbar">
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" placeholder="Cari rekam medis..." />
-    </div>
-    <button class="btn btn-primary w-100" (click)="openInputDialog()">+ Input Rekam Medis</button>
+<div class="container">
+  <div class="row">
+    <h1>Manajemen Rekam Medis</h1>
   </div>
+  <div class="row">
+    <p>Kelola data rekam medis dan riwayat pemeriksaan pasien</p>
+  </div>
+  <div class="container">
+    <div class="row mb-3 mt-3">
+      <button class="btn btn-primary lg:col-2 col-5 me-auto" (click)="openAddRekamMedisDialog()">
+        Tambah Rekam Medis
+      </button>
+    </div>
 
-  <app-dialog
-    [(opened)]="isInputDialogOpen"
-    title="Input Rekam Medis Baru"
-    (submitted)="onInputDialogSubmit()"
-  >
-    <form [formGroup]="formRekamMedis">
-      <div class="form-row">
+    <div class="row mb-4 p-3 border rounded bg-light">
+      <h5>Filter & Cari Data</h5>
+
+      <div class="col-12 col-md-6 mb-3 d-flex gap-3">
         <div class="form-group">
-          <label>Nama Pasien *</label>
-          <input
-            formControlName="pasienName"
-            type="text"
-            class="form-control"
-            placeholder="Nama lengkap"
-          />
-        </div>
-        <div class="form-group">
-          <label>Dokter Pemeriksa *</label>
-          <input formControlName="dokter" type="text" class="form-control" placeholder="Dr. ..." />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Tanggal Pemeriksaan *</label>
-          <input formControlName="tanggal" type="date" class="form-control" />
-        </div>
-        <div class="form-group">
-          <label>Waktu</label>
-          <input formControlName="waktu" type="time" class="form-control" />
-        </div>
-      </div>
-
-      <label class="section-label">Tanda Vital</label>
-      <div class="form-row vital-row">
-        <div class="form-group">
-          <label>Tekanan Darah</label>
-          <input formControlName="tensi" type="text" class="form-control" placeholder="120/80" />
-        </div>
-        <div class="form-group">
-          <label>Suhu (°C)</label>
-          <input formControlName="suhu" type="text" class="form-control" placeholder="36.5" />
-        </div>
-        <div class="form-group">
-          <label>Nadi</label>
-          <input formControlName="nadi" type="text" class="form-control" placeholder="80" />
-        </div>
-        <div class="form-group">
-          <label>Berat Badan (kg)</label>
-          <input formControlName="berat" type="text" class="form-control" placeholder="65" />
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Keluhan Pasien *</label>
-        <textarea
-          formControlName="keluhan"
-          class="form-control"
-          placeholder="Deskripsikan keluhan..."
-          rows="2"
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Diagnosa *</label>
-        <textarea
-          formControlName="diagnosa"
-          class="form-control"
-          placeholder="Hasil diagnosa..."
-          rows="2"
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Tindakan dan Terapi</label>
-        <textarea
-          formControlName="tindakan"
-          class="form-control"
-          placeholder="Tindakan medis..."
-          rows="2"
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Resep Obat</label>
-        <input
-          formControlName="resep"
-          type="text"
-          class="form-control"
-          placeholder="Nama obat, contoh: Paracetamol 500mg"
-        />
-      </div>
-
-      <div class="form-group">
-        <label>Catatan Tambahan</label>
-        <textarea
-          formControlName="catatan"
-          class="form-control"
-          placeholder="Catatan penting..."
-          rows="2"
-        ></textarea>
-      </div>
-    </form>
-  </app-dialog>
-
-  <div class="card-list">
-    <div class="card" *ngFor="let item of dataRekamMedis">
-      <div class="card-header">
-        <div class="patient-icon">📄</div>
-        <div class="header-info">
-          <div class="row-top">
-            <span class="patient-name">{{ item.pasienName }}</span>
-            <span class="patient-id-tag">{{ item.id }}</span>
-          </div>
-          <div class="row-bottom">
-            <span class="date">📅 {{ item.tanggal }}</span>
-            <span class="separator">•</span>
-            <span class="doctor">{{ item.dokter }}</span>
+          <label class="form-label">Cari Nama Pasien</label>
+          <div class="input-group gap-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Ketik nama pasien..."
+              [ngModel]="state.search"
+              (ngModelChange)="rekammedisStore.updateSearch($event)"
+              (keyup.enter)="onSearch()"
+            />
+            <div>
+              <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
+                Cari
+              </button>
+            </div>
           </div>
         </div>
-        <div class="action-icon" (click)="openDetail(item)">👁️</div>
+
+        <div class="col-12 col-md-3 mb-3">
+          <label class="form-label">Show</label>
+          <select
+            class="form-select"
+            [ngModel]="pagination.limit"
+            (ngModelChange)="onLimitChange($event)"
+          >
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="25">25</option>
+            <option [ngValue]="50">50</option>
+            <option [ngValue]="100">100</option>
+          </select>
+        </div>
       </div>
-      <hr class="divider" />
-      <div class="card-body">
-        <div class="col">
-          <label>Keluhan</label>
-          <p>{{ item.keluhan }}</p>
-        </div>
-        <div class="col">
-          <label>Diagnosa</label>
-          <p>{{ item.diagnosa }}</p>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <div *ngIf="state.isLoading" class="alert alert-info">Memuat data...</div>
+
+            <div *ngIf="state.errorMessage" class="alert alert-danger">
+              {{ state.errorMessage }}
+            </div>
+            @if(!state.isLoading && dataRekamMedis.length > 0) {
+            <table
+              *ngIf="!state.isLoading && dataRekamMedis.length > 0"
+              class="table table-striped table-hover"
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th>No.</th>
+                  <th>Nama Pasien</th>
+                  <th>Tanggal</th>
+                  <th>Dokter</th>
+                  <th>Keluhan</th>
+                  <th>Diagnosa</th>
+                  <th>Tanggal Dibuat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let rekammedis of dataRekamMedis; let i = index; trackBy: trackById">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ rekammedis.pasien.nama }}</td>
+                  <td>{{ rekammedis.tanggal | date : 'dd/MM/yyyy' }}</td>
+                  <td>{{ rekammedis.dokter }}</td>
+                  <td>{{ rekammedis.keluhan }}</td>
+                  <td>{{ rekammedis.diagnosa }}</td>
+                  <td>{{ rekammedis.createdAt | date : 'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <div class="d-flex gap-3">
+                      <app-delete [id]="rekammedis._id.toString()"></app-delete>
+
+                      <button
+                        class="btn btn-sm btn-warning me-2"
+                        (click)="openUpdateRekamMedisDialog(String(rekammedis._id))"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        class="btn btn-sm btn-info me-2"
+                        (click)="openDetailDialog(String(rekammedis._id))"
+                      >
+                        Detail
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            }@else {
+            <div class="alert alert-warning">Tidak ada data rekam medis</div>
+            }
+          </div>
+          @if(dataRekamMedis.length > 0){
+          <div class="row mt-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted"
+                  >Menampilkan {{ (pagination.currentPage - 1) * pagination.limit + 1 }} -
+                  {{ Math.min(pagination.currentPage * pagination.limit, pagination.totalData) }}
+                  dari {{ pagination.totalData }} data</small
+                >
+              </div>
+              <nav>
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(1)">«</button>
+                  </li>
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(pagination.currentPage - 1)">
+                      ‹
+                    </button>
+                  </li>
+                  <li class="page-item active">
+                    <span class="page-link">{{ pagination.currentPage }}</span>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="pagination.currentPage === pagination.totalPages"
+                  ></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+          }
         </div>
       </div>
-      <div class="card-footer">
-        <label>Resep</label>
-        <div class="tags-container">
-          <span class="medicine-tag">{{ item.resep }}</span>
-        </div>
+      <div class="row">
+        <app-create-rekam-medis [(isDialogOpen)]="isDialogOpen"></app-create-rekam-medis>
+      </div>
+      <div class="row">
+        <app-update-rekam-medis
+          [id]="updateId"
+          [(isDialogOpen)]="isDialogUpdateOpen"
+        ></app-update-rekam-medis>
+      </div>
+      <div class="row">
+        <app-detail [id]="detailId" [(opened)]="isDetailOpen"></app-detail>
       </div>
     </div>
   </div>
-
-  <app-dialog 
-    [(opened)]="isDetailDialogOpen"
-    title="Detail Rekam Medis"
-    (submitted)="closeDetailDialog()"
-  >
-    <div *ngIf="selectedRecord" class="detail-content">
-      <h3 class="detail-section-title">Informasi Pasien</h3>
-      <div class="detail-grid">
-        <div>
-          <label>Nama Pasien</label>
-          <p>{{ selectedRecord.pasienName }}</p>
-        </div>
-        <div>
-          <label>ID Rekam Medis</label>
-          <p>{{ selectedRecord.id }}</p>
-        </div>
-        <div>
-          <label>Tanggal Pemeriksaan</label>
-          <p>{{ selectedRecord.tanggal }}</p>
-        </div>
-        <div>
-          <label>Waktu</label>
-          <p>{{ selectedRecord.waktu }}</p>
-        </div>
-      </div>
-
-      <h3 class="detail-section-title mt-3">Tanda Vital</h3>
-      <div class="detail-grid">
-        <div>
-          <label>Tekanan Darah</label>
-          <p>{{ selectedRecord.tensi }}</p>
-        </div>
-        <div>
-          <label>Suhu</label>
-          <p>{{ selectedRecord.suhu }}°C</p>
-        </div>
-        <div>
-          <label>Nadi</label>
-          <p>{{ selectedRecord.nadi }} x/menit</p>
-        </div>
-        <div>
-          <label>Berat Badan</label>
-          <p>{{ selectedRecord.berat }} kg</p>
-        </div>
-      </div>
-
-      <h3 class="detail-section-title mt-3">Detail Pemeriksaan</h3>
-      <div class="detail-stack">
-        <div>
-          <label>Dokter Pemeriksa</label>
-          <p>{{ selectedRecord.dokter }}</p>
-        </div>
-        <div>
-          <label>Keluhan</label>
-          <p>{{ selectedRecord.keluhan }}</p>
-        </div>
-        <div>
-          <label>Diagnosa</label>
-          <p>{{ selectedRecord.diagnosa }}</p>
-        </div>
-        <div>
-          <label>Tindakan dan Terapi</label>
-          <p>{{ selectedRecord.tindakan }}</p>
-        </div>
-      </div>
-
-      <h3 class="detail-section-title mt-3">Resep Obat</h3>
-      <p>{{ selectedRecord.resep }}</p>
-
-      <h3 class="detail-section-title mt-3">Catatan</h3>
-      <p>{{ selectedRecord.catatan }}</p>
-    </div>
-  </app-dialog>
 </div>
-</div> -->

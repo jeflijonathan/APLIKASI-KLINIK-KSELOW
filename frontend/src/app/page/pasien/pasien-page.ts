@@ -1,87 +1,65 @@
-// src/app/page/pasien/pasien-page.ts
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // Tambahkan DatePipe untuk *ngFor
-
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { PasienModel } from '../../api/pasien/model';
+import { PasienStore } from './List/hook/pasien.store';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
-
-interface PasienType {
-  _id?: string;
-  nama: string;
-  tanggal_lahir: string;
-  jenis_kelamin: string;
-  asuransi: string;
-  createdAt?: string;
-}
+import { Update } from './Update/update';
 
 @Component({
   selector: 'app-pasien-page',
   standalone: true,
-  // 1. Hapus Dialog dari imports, karena tidak digunakan di template ini
-  imports: [Create, FormsModule, ReactiveFormsModule, CommonModule, DatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update],
   templateUrl: './pasien-page.html',
-  styleUrl: './pasien-page.css',
-  // Catatan: MatDialog, NgZone, TemplateRef, ViewChild tidak digunakan di kode yang tersedia.
-  // Anda bisa menghapusnya dari imports dan class jika tidak digunakan di bagian lain.
+  styleUrls: ['./pasien-page.css'],
 })
 export class PasienPage implements OnInit {
-  // =========================
-  //         STATES
-  // =========================
   isDialogOpen = false;
-  isLoading = false;
-  errorMessage = '';
+  isDialogUpdateOpen = false;
+  updateId: string = '';
 
   Math = Math;
-
-  dataPasien: PasienType[] = [];
-
-  searchQuery = '';
-  filterJenisKelamin = '';
-  filterAsuransi = '';
-  currentPage = 1;
-  pageSize = 10;
-  totalData = 0;
-
-  // formPasien Dihapus dari sini karena sudah dikelola di Create
-  // formPasien!: FormGroup;
-
-  // Hapus MatDialog dan FormBuilder dari constructor jika tidak digunakan
-  constructor(private cd: ChangeDetectorRef) {
-    // Hapus inisialisasi this.formPasien di sini
-  }
+  constructor(private cd: ChangeDetectorRef, public pasienStore: PasienStore) {}
 
   ngOnInit() {
-    this.fetchDataPasien();
+    this.pasienStore.fetchPasien();
   }
 
-  // openWithTemplate() dan ViewChild dihapus jika tidak digunakan
+  get pagination() {
+    return this.pasienStore.pagination();
+  }
+
+  get dataPasien() {
+    return this.pasienStore.pasienList();
+  }
+
+  get state() {
+    return this.pasienStore.getState();
+  }
 
   openAddPasienDialog() {
     this.isDialogOpen = true;
   }
 
-  // 2. Perbaikan handleSubmit: Ganti nama dan terima data pasien sebagai argumen
-  async handleCreateSubmit(formData: PasienType) {
-    // <--- Terima data pasien
+  openUpdatePasienDialog(id: string | undefined = 'kosong') {
+    this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
+    this.updateId = id;
+  }
 
-    // Perhatian: Tidak perlu ada this.formPasien.invalid check lagi
-    // karena komponen Create menjamin data yang dikirimkan sudah valid.
-
+  async handleCreateSubmit(formData: PasienModel) {
     try {
       const res = await fetch('http://localhost:3000/api/pasien', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData), // Gunakan formData dari komponen Create
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
       if (res.ok) {
         alert('Data pasien berhasil disimpan!');
-        // Tidak perlu this.formPasien.reset() lagi
         this.isDialogOpen = false;
-        this.fetchDataPasien();
+        this.pasienStore.fetchPasien();
       } else {
         alert('Error: ' + (data.message || 'Gagal menyimpan data'));
       }
@@ -90,48 +68,26 @@ export class PasienPage implements OnInit {
     }
   }
 
-  // ... (fetchDataPasien, onSearch, onFilterChange, onPageChange)
-  async fetchDataPasien() {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    try {
-      let url = `http://localhost:3000/api/pasien?page=${this.currentPage}&limit=${this.pageSize}`;
-
-      if (this.searchQuery.trim()) url += `&search=${this.searchQuery.trim()}`;
-      if (this.filterJenisKelamin) url += `&jenis_kelamin=${this.filterJenisKelamin}`;
-      if (this.filterAsuransi) url += `&asuransi=${this.filterAsuransi}`;
-
-      console.log('REQUEST:', url);
-
-      const res = await fetch(url);
-      const data = await res.json();
-
-      this.dataPasien = data.data || [];
-      this.totalData = data.total || 0;
-
-      // 👉 SOLUSI WAJIB
-      this.cd.detectChanges();
-    } catch (error) {
-      this.errorMessage = 'Terjadi kesalahan: ' + error;
-    } finally {
-      this.isLoading = false;
-      this.cd.detectChanges(); // 👉 PENTING BANGET
-    }
+  trackById(index: number, item: PasienModel) {
+    return item._id;
   }
 
   onSearch() {
-    this.currentPage = 1;
-    this.fetchDataPasien();
-  }
-
-  onFilterChange() {
-    this.currentPage = 1;
-    this.fetchDataPasien();
+    this.pasienStore.setPagination({ currentPage: 1 });
+    this.pasienStore.fetchPasien();
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
-    this.fetchDataPasien();
+    this.pasienStore.setPagination({ currentPage: page });
+    this.pasienStore.fetchPasien();
+  }
+
+  onLimitChange(newLimit: number) {
+    this.pasienStore.setPagination({
+      limit: newLimit,
+      currentPage: 1,
+    });
+
+    this.pasienStore.fetchPasien();
   }
 }

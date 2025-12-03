@@ -7,7 +7,9 @@
 
     <div class="dialog-actions">
       <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      @if(hasSubmit) {
       <button type="button" class="btn btn-primary" (click)="onSubmit()">Submit</button>
+      }
     </div>
   </div>
 </div>

@@ -1,20 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RekamMedis } from './rekam-medis';
-// Tambahkan import ini agar testing tidak error
-import { ReactiveFormsModule } from '@angular/forms';
-import { Dialog } from '../../common/components/dialog/dialog';
+import { RekamMedisPage } from './rekam-medis';
 
-describe('RekamMedisComponent', () => {
-  let component: RekamMedis;
-  let fixture: ComponentFixture<RekamMedis>;
+describe('RekamMedisPage', () => {
+  let component: RekamMedisPage;
+  let fixture: ComponentFixture<RekamMedisPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // Tambahkan modul di sini
-      imports: [RekamMedis, ReactiveFormsModule, Dialog],
+      imports: [RekamMedisPage],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RekamMedis);
+    fixture = TestBed.createComponent(RekamMedisPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

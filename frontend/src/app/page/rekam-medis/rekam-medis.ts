@@ -1,154 +1,92 @@
-// import { Component } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import {
-//   ReactiveFormsModule,
-//   FormBuilder,
-//   FormGroup,
-//   Validators,
-//   FormsModule,
-// } from '@angular/forms';
-// import { Dialog } from '../../common/components/dialog/dialog';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { RekamMedisModel } from '../../api/rekammedis/model';
+import { RekammedisStore } from './List/hook/rekammedis.store';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Create } from './Create/create';
+import { Update } from './Update/update';
+import { Delete } from './Delete/Delete';
+import { Detail } from './Detail/Detail';
 
-// interface RekamMedisType {
-//   id: string;
-//   pasienName: string;
-//   pasienId: string;
-//   tanggal: string;
-//   waktu: string;
-//   dokter: string;
-//   keluhan: string;
-//   diagnosa: string;
-//   tindakan: string;
-//   resep: string;
-//   catatan: string;
-//   tensi: string;
-//   suhu: string;
-//   nadi: string;
-//   berat: string;
-// }
+@Component({
+  selector: 'app-rekam-medis',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DatePipe,
+    Create,
+    Update,
+    Delete,
+    Detail,
+  ],
+  templateUrl: './rekam-medis.html',
+  styleUrls: ['./rekam-medis.css'],
+})
+export class RekamMedisPage implements OnInit {
+  Math = Math;
+  isDialogOpen: boolean = false;
+  isDialogUpdateOpen: boolean = false;
+  isDetailOpen: boolean = false;
+  updateId: string = '';
+  detailId: string = '';
+  isDialogDetailOpen = false;
 
-// @Component({
-//   selector: 'app-rekam-medis',
-//   standalone: true,
-//   imports: [CommonModule, ReactiveFormsModule, FormsModule, Dialog],
-//   templateUrl: './rekam-medis.html',
-//   styleUrls: ['./rekam-medis.css'],
-// })
-// export class RekamMedis {
-//   // Dialog state
-//   isInputDialogOpen = false;
-//   isDetailDialogOpen = false;
+  data = (Math = Math);
+  String = String;
+  constructor(private cd: ChangeDetectorRef, public rekammedisStore: RekammedisStore) {}
 
-//   // Form
-//   formRekamMedis!: FormGroup;
+  ngOnInit() {
+    this.rekammedisStore.fetchRekamMedis();
+  }
 
-//   // Selected data
-//   selectedRecord: RekamMedisType | null = null;
+  get pagination() {
+    return this.rekammedisStore.pagination();
+  }
 
-//   // Dummy data
-//   dataRekamMedis: RekamMedisType[] = [
-//     {
-//       id: 'RM001',
-//       pasienName: 'Ahmad Zulkarnain',
-//       pasienId: 'P001',
-//       tanggal: '2025-11-23',
-//       waktu: '10:30',
-//       dokter: 'Dr. Andi Wijaya, Sp.PD',
-//       keluhan: 'Demam tinggi, sakit kepala',
-//       diagnosa: 'Influenza',
-//       tindakan: 'Istirahat total',
-//       resep: 'Paracetamol 500mg 3x1, Vitamin C',
-//       catatan: 'Perbanyak minum',
-//       tensi: '120/80',
-//       suhu: '38.5',
-//       nadi: '90',
-//       berat: '70',
-//     },
-//     {
-//       id: 'RM002',
-//       pasienName: 'Siti Nurhaliza',
-//       pasienId: 'P002',
-//       tanggal: '2025-11-22',
-//       waktu: '09:15',
-//       dokter: 'Dr. Maya Sari, Sp.A',
-//       keluhan: 'Kontrol diabetes',
-//       diagnosa: 'Diabetes Tipe 2',
-//       tindakan: 'Diet gula',
-//       resep: 'Metformin 500mg 2x1, Glimepiride 4mg 1x1',
-//       catatan: 'Gula darah stabil',
-//       tensi: '130/85',
-//       suhu: '36.5',
-//       nadi: '80',
-//       berat: '65',
-//     },
-//   ];
+  get dataRekamMedis() {
+    return this.rekammedisStore.rekammedisList();
+  }
 
-//   constructor(private fb: FormBuilder) {
-//     this.formRekamMedis = this.fb.group({
-//       pasienName: ['', Validators.required],
-//       pasienId: [''],
-//       dokter: ['', Validators.required],
-//       tanggal: ['', Validators.required],
-//       waktu: [''],
-//       tensi: [''],
-//       suhu: [''],
-//       nadi: [''],
-//       berat: [''],
-//       keluhan: ['', Validators.required],
-//       diagnosa: ['', Validators.required],
-//       tindakan: [''],
-//       resep: [''],
-//       catatan: [''],
-//     });
-//   }
+  get state() {
+    return this.rekammedisStore.getState();
+  }
 
-//   // Dialog handlers
-//   openInputDialog(): void {
-//     this.formRekamMedis.reset();
-//     this.isInputDialogOpen = true;
-//   }
+  openAddRekamMedisDialog() {
+    this.isDialogOpen = true;
+  }
 
-//   closeInputDialog(): void {
-//     this.isInputDialogOpen = false;
-//   }
+  openUpdateRekamMedisDialog(id: string | undefined = 'kosong') {
+    this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
+    this.updateId = id;
+  }
 
-//   onInputDialogSubmit(): void {
-//     if (this.formRekamMedis.invalid) {
-//       alert('Harap lengkapi data wajib!');
-//       return;
-//     }
+  openDetailDialog(id: string) {
+    this.detailId = id;
+    this.isDetailOpen = true;
+  }
 
-//     const newRecord: RekamMedisType = {
-//       id: `RM${this.dataRekamMedis.length + 1}`,
-//       pasienName: this.formRekamMedis.value.pasienName,
-//       pasienId: this.formRekamMedis.value.pasienId || `P${this.dataRekamMedis.length + 1}`,
-//       tanggal: this.formRekamMedis.value.tanggal,
-//       waktu: this.formRekamMedis.value.waktu,
-//       dokter: this.formRekamMedis.value.dokter,
-//       keluhan: this.formRekamMedis.value.keluhan,
-//       diagnosa: this.formRekamMedis.value.diagnosa,
-//       tindakan: this.formRekamMedis.value.tindakan,
-//       resep: this.formRekamMedis.value.resep || '',
-//       catatan: this.formRekamMedis.value.catatan,
-//       tensi: this.formRekamMedis.value.tensi,
-//       suhu: this.formRekamMedis.value.suhu,
-//       nadi: this.formRekamMedis.value.nadi,
-//       berat: this.formRekamMedis.value.berat,
-//     };
+  trackById(index: number, item: RekamMedisModel) {
+    return item._id;
+  }
 
-//     this.dataRekamMedis.unshift(newRecord);
-//     console.log('Rekam Medis ditambahkan:', newRecord);
-//     alert('Data Rekam Medis berhasil disimpan!');
-//     this.isInputDialogOpen = false;
-//   }
+  onSearch() {
+    this.rekammedisStore.setPagination({ currentPage: 1 });
+    this.rekammedisStore.fetchRekamMedis();
+  }
 
-//   openDetail(item: RekamMedisType): void {
-//     this.selectedRecord = item;
-//     this.isDetailDialogOpen = true;
-//   }
+  onPageChange(page: number) {
+    this.rekammedisStore.setPagination({ currentPage: page });
+    this.rekammedisStore.fetchRekamMedis();
+  }
 
-//   closeDetailDialog(): void {
-//     this.isDetailDialogOpen = false;
-//     this.selectedRecord = null;
-//   }
-// }
+  onLimitChange(newLimit: number) {
+    this.rekammedisStore.setPagination({
+      limit: newLimit,
+      currentPage: 1,
+    });
+
+    this.rekammedisStore.fetchRekamMedis();
+  }
+}

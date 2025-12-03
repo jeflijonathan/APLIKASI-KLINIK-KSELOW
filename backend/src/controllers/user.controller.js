@@ -2,7 +2,6 @@ import User from "#models/user.model.js";
 import bcrypt from "bcryptjs";
 
 class UserController {
-  // Register
   static async register(req, res) {
     try {
       const { username, email, password, role } = req.body;
@@ -21,7 +20,6 @@ class UserController {
         });
       }
 
-      // Cek duplikasi
       const existingUser = await User.findOne({
         $or: [{ username }, { email }],
       });
@@ -64,11 +62,9 @@ class UserController {
     }
   }
 
-  // login user
   static async login(req, res) {
     try {
       const { identifier, password } = req.body;
-      // login = username / email
 
       if (!identifier || !password) {
         return res.status(400).json({
@@ -78,7 +74,6 @@ class UserController {
         });
       }
 
-      // Cari berdasarkan username atau email
       const user = await User.findOne({
         $or: [{ username: identifier }, { email: identifier }],
       });
@@ -91,7 +86,6 @@ class UserController {
         });
       }
 
-      // Cek password
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         return res.status(401).json({
@@ -121,7 +115,6 @@ class UserController {
     }
   }
 
-  // GET ALL USERS
   static async getAllUsers(req, res) {
     try {
       let { page = 1, limit = 10, search } = req.query;
@@ -165,7 +158,6 @@ class UserController {
     }
   }
 
-  // GET USER BY ID
   static async getUserById(req, res) {
     try {
       const { id } = req.params;
@@ -196,13 +188,11 @@ class UserController {
     }
   }
 
-  // UPDATE USER
   static async updateUser(req, res) {
     try {
       const { id } = req.params;
       const updatedData = req.body;
 
-      // Jika update password → hash ulang
       if (updatedData.password) {
         updatedData.password = await bcrypt.hash(updatedData.password, 10);
       }
@@ -235,8 +225,6 @@ class UserController {
       });
     }
   }
-
-  // DELETE USER
   static async deleteUser(req, res) {
     try {
       const { id } = req.params;
