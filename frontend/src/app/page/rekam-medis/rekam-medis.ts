@@ -14,11 +14,11 @@ import { Update } from './Update/update';
   styleUrls: ['./rekam-medis.css'],
 })
 export class RekamMedisPage implements OnInit {
+  Math = Math;
   isDialogOpen = false;
   isDialogUpdateOpen = false;
   updateId: string = '';
-
-  Math = Math;
+  data = (Math = Math);
   String = String;
   constructor(private cd: ChangeDetectorRef, public rekammedisStore: RekammedisStore) {}
 
@@ -45,53 +45,6 @@ export class RekamMedisPage implements OnInit {
   openUpdateRekamMedisDialog(id: string | undefined = 'kosong') {
     this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
     this.updateId = id;
-  }
-
-  async handleCreateSubmit(formData: any) {
-    try {
-      // Normalize payload: ensure numbers and arrays are sent correctly
-      const payload: any = { ...formData };
-
-      // tanggal: convert to ISO string if Date-like
-      if (payload.tanggal) {
-        try {
-          const d = new Date(payload.tanggal);
-          if (!isNaN(d.getTime())) payload.tanggal = d.toISOString();
-        } catch (e) {}
-      }
-
-      // beratBadan and suhuBadan should be numbers
-      if (payload.beratBadan !== undefined && payload.beratBadan !== null)
-        payload.beratBadan = Number(payload.beratBadan);
-      if (payload.suhuBadan !== undefined && payload.suhuBadan !== null)
-        payload.suhuBadan = Number(payload.suhuBadan);
-
-      // resep: accept comma-separated string -> array
-      if (typeof payload.resep === 'string') {
-        payload.resep = payload.resep
-          .split(',')
-          .map((r: string) => r.trim())
-          .filter((r: string) => r.length > 0);
-      }
-
-      const res = await fetch('http://localhost:3000/api/rekammedis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert('Data rekam medis berhasil disimpan!');
-        this.isDialogOpen = false;
-        this.rekammedisStore.fetchRekamMedis();
-      } else {
-        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
-      }
-    } catch (error) {
-      alert('Kesalahan mengirim data: ' + error);
-    }
   }
 
   trackById(index: number, item: RekamMedisModel) {

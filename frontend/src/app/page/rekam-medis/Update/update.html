@@ -11,8 +11,14 @@
     <form [formGroup]="formRekamMedis">
       <div class="form-group mb-3">
         <label>Nama Pasien</label>
-        <input formControlName="nama" type="text" class="form-control" />
 
+        <select formControlName="pasien" class="form-control">
+          <option [ngValue]="null">-- Pilih Pasien --</option>
+
+          @for(p of getState.pasienList; track p._id) {
+          <option [ngValue]="p._id">{{ p.nama }}</option>
+          }
+        </select>
         @if(formRekamMedis.get('nama')?.touched && formRekamMedis.get('nama')?.invalid) {
         <div class="text-danger">Nama harus diisi.</div>
         }
@@ -49,16 +55,23 @@
         <label>Berat Badan (kg)</label>
         <input formControlName="beratBadan" type="number" class="form-control" />
 
-        @if(formRekamMedis.get('beratBadan')?.touched && formRekamMedis.get('beratBadan')?.invalid) {
+        @if(formRekamMedis.get('beratBadan')?.touched && formRekamMedis.get('beratBadan')?.invalid)
+        {
         <div class="text-danger">Berat badan harus diisi.</div>
         }
       </div>
 
       <div class="form-group mb-3">
         <label>Tekanan Darah</label>
-        <input formControlName="tekananDarah" type="text" class="form-control" placeholder="e.g., 120/80" />
+        <input
+          formControlName="tekananDarah"
+          type="text"
+          class="form-control"
+          placeholder="e.g., 120/80"
+        />
 
-        @if(formRekamMedis.get('tekananDarah')?.touched && formRekamMedis.get('tekananDarah')?.invalid) {
+        @if(formRekamMedis.get('tekananDarah')?.touched &&
+        formRekamMedis.get('tekananDarah')?.invalid) {
         <div class="text-danger">Tekanan darah harus diisi.</div>
         }
       </div>

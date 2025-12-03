@@ -80,11 +80,17 @@ class PasienController {
         data: pasien,
       });
     } catch (err) {
-      res.json({
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
+
+      res.status(statusCode).json({
         status: false,
-        statusCode: 500,
-        message: "Internal Server Error",
-        details: err.message,
+        statusCode: statusCode,
+        message: message,
+        details: details,
       });
     }
   }
@@ -135,21 +141,17 @@ class PasienController {
       });
     } catch (err) {
       console.error(err);
-      let statusCode = 500;
-      let message = "Failed to create pasien";
-
-      if (err.name === "ValidationError") {
-        statusCode = 400;
-        message = err.message;
-      } else if (err.statusCode) {
-        statusCode = err.statusCode;
-        message = err.message;
-      }
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
 
       res.status(statusCode).json({
         status: false,
         statusCode: statusCode,
         message: message,
+        details: details,
       });
     }
   }
@@ -160,7 +162,6 @@ class PasienController {
       const updateData = {};
       let errorDetails = [];
 
-      // Validasi data yang akan diupdate (hanya cek jika ada di body)
       if (nama !== undefined && nama !== "") {
         updateData.nama = nama;
       } else if (nama === "") {
@@ -185,7 +186,6 @@ class PasienController {
         errorDetails.push("asuransi tidak boleh kosong");
       }
 
-      // Cek jika ada error validasi
       if (errorDetails.length > 0) {
         return res.status(400).json({
           status: false,
@@ -195,7 +195,6 @@ class PasienController {
         });
       }
 
-      // Cek jika tidak ada data yang akan diupdate
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({
           status: false,
@@ -204,14 +203,12 @@ class PasienController {
         });
       }
 
-      // Lakukan update data
       const pasien = await pasienSchema.findByIdAndUpdate(
         id,
-        { $set: updateData }, // Menggunakan $set untuk mengupdate hanya field yang ada di updateData
-        { new: true, runValidators: true } // new: true mengembalikan dokumen yang sudah diupdate, runValidators: true menjalankan validasi skema
+        { $set: updateData },
+        { new: true, runValidators: true }
       );
 
-      // Cek jika pasien tidak ditemukan
       if (!pasien) {
         return res.status(404).json({
           status: false,
@@ -226,26 +223,42 @@ class PasienController {
         data: pasien,
       });
     } catch (err) {
-      console.error(err);
-      let statusCode = 500;
-      let message = "Failed to update pasien";
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
 
-      // Menangani error validasi dari Mongoose (misalnya tipe data salah)
-      if (err.name === "ValidationError") {
-        statusCode = 400;
-        message = err.message;
-      } else if (err.name === "CastError") {
-        // Menangani jika ID yang diberikan tidak valid
-        statusCode = 400;
-        message = "Invalid Pasien ID format";
-      } else if (err.statusCode) {
-        statusCode = err.statusCode;
-        message = err.message;
-      }
       res.status(statusCode).json({
         status: false,
         statusCode: statusCode,
         message: message,
+        details: details,
+      });
+    }
+  }
+
+  static async getPasienOptions(req, res) {
+    try {
+      const data = await pasienSchema.find({}).select({ _id: 1, nama: 1 });
+      res.status(200).json({
+        status: true,
+        statusCode: 200,
+        message: "Successfully Fetched Pasien Options",
+        data,
+      });
+    } catch (err) {
+      const {
+        statusCode = 500,
+        message = "Failed to update pasien",
+        details,
+      } = err;
+
+      res.status(statusCode).json({
+        status: false,
+        statusCode: statusCode,
+        message: message,
+        details: details,
       });
     }
   }

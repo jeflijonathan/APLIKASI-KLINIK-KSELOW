@@ -99,14 +99,16 @@ class RekamMedisController {
       if (!suhuBadan) errorDetails.push("suhuBadan is required");
       if (!diagnosa) errorDetails.push("diagnosa is required");
 
-      // If frontend sends `nama` instead of `pasien` (id), try to resolve pasien by name
       if ((!pasien || pasien === "" || pasien == null) && nama) {
         const nameTrim = String(nama).trim();
-        // try exact case-insensitive match first
-        let pasienByName = await Pasien.findOne({ nama: { $regex: `^${nameTrim}$`, $options: 'i' } });
-        // fallback to partial match if exact not found
+        let pasienByName = await Pasien.findOne({
+          nama: { $regex: `^${nameTrim}$`, $options: "i" },
+        });
+
         if (!pasienByName) {
-          pasienByName = await Pasien.findOne({ nama: { $regex: nameTrim, $options: 'i' } });
+          pasienByName = await Pasien.findOne({
+            nama: { $regex: nameTrim, $options: "i" },
+          });
         }
         if (pasienByName) pasien = pasienByName._id;
       }
@@ -127,7 +129,6 @@ class RekamMedisController {
         });
       }
 
-      // Normalize resep: accept comma-separated string or array
       let resepData = [];
       if (Array.isArray(resep)) {
         resepData = resep;
@@ -173,6 +174,7 @@ class RekamMedisController {
     try {
       const { id } = req.params;
       const {
+        pasien,
         keluhan,
         dokter,
         beratBadan,
@@ -196,6 +198,11 @@ class RekamMedisController {
         if (dokter === "") errorDetails.push("dokter tidak boleh kosong");
         else updateData.dokter = dokter;
       }
+      if (pasien !== undefined) {
+        const pasienExist = await Pasien.findById(pasien);
+        if (!pasienExist) errorDetails.push("pasien tidak ditemukan");
+        else updateData.pasien = pasien;
+      }
 
       if (beratBadan !== undefined) updateData.beratBadan = beratBadan;
       if (tekananDarah !== undefined) updateData.tekananDarah = tekananDarah;
@@ -206,7 +213,17 @@ class RekamMedisController {
         else updateData.diagnosa = diagnosa;
       }
 
-      if (resep !== undefined) updateData.resep = resep;
+      if (resep !== undefined) {
+        if (Array.isArray(resep)) {
+          updateData.resep = resep;
+        } else if (typeof resep === "string") {
+          updateData.resep = resep
+            .split(",")
+            .map((r) => r.trim())
+            .filter((r) => r.length > 0);
+        }
+      }
+
       if (catatan !== undefined) updateData.catatan = catatan;
 
       if (isActive !== undefined) updateData.isActive = isActive;

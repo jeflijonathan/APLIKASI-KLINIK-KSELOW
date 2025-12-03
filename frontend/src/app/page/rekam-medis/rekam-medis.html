@@ -58,7 +58,7 @@
             <div *ngIf="state.errorMessage" class="alert alert-danger">
               {{ state.errorMessage }}
             </div>
-
+            @if(!state.isLoading && dataRekamMedis.length > 0) {
             <table
               *ngIf="!state.isLoading && dataRekamMedis.length > 0"
               class="table table-striped table-hover"
@@ -96,13 +96,12 @@
                 </tr>
               </tbody>
             </table>
-
-            <div *ngIf="!state.isLoading && dataRekamMedis.length === 0" class="alert alert-warning">
-              Tidak ada data rekam medis
-            </div>
+            }@else {
+            <div class="alert alert-warning">Tidak ada data rekam medis</div>
+            }
           </div>
-
-          <div *ngIf="dataRekamMedis.length > 0" class="row mt-4">
+          @if(dataRekamMedis.length > 0){
+          <div class="row mt-4">
             <div class="col-12 d-flex justify-content-between align-items-center">
               <div>
                 <small class="text-muted"
@@ -136,16 +135,17 @@
               </nav>
             </div>
           </div>
+          }
         </div>
       </div>
       <div class="row">
-        <app-create-rekam-medis
-          [(isDialogOpen)]="isDialogOpen"
-          (submitted)="handleCreateSubmit($event)"
-        ></app-create-rekam-medis>
+        <app-create-rekam-medis [(isDialogOpen)]="isDialogOpen"></app-create-rekam-medis>
       </div>
       <div class="row">
-        <app-update-rekam-medis [id]="updateId" [(isDialogOpen)]="isDialogUpdateOpen"></app-update-rekam-medis>
+        <app-update-rekam-medis
+          [id]="updateId"
+          [(isDialogOpen)]="isDialogUpdateOpen"
+        ></app-update-rekam-medis>
       </div>
     </div>
   </div>

@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import  RekamMedisService  from '../../../../api/rekammedis';
+import RekamMedisService from '../../../../api/rekammedis';
 import { filterMapper } from '../utils/rekammedis-filter-mapper';
 import { PaginationType } from '../../../../common/type';
 import { RekamMedisModel } from '../../../../api/rekammedis/model';
@@ -86,11 +86,11 @@ export class RekammedisStore {
     await this.rekamMedisService.getRekamMedis(
       {
         onSuccess: (res) => {
-          this.state.update((s) => ({
-            ...s,
+          this.state.update((prev) => ({
+            ...prev,
             rekammedisList: res.data,
             pagination: {
-              ...s.pagination,
+              ...prev.pagination,
               currentPage: res.pagination.currentPage,
               limit: res.pagination.limit,
               totalData: res.pagination.totalData ?? 0,
@@ -101,8 +101,8 @@ export class RekammedisStore {
           }));
         },
         onError: (err) => {
-          this.state.update((s) => ({
-            ...s,
+          this.state.update((prev) => ({
+            ...prev,
             isLoading: false,
             errorMessage: err || 'Gagal memuat data',
           }));

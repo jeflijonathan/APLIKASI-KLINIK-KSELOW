@@ -11,6 +11,7 @@ import {
 import RekamMedisService from '../../../api/rekammedis';
 import { RekamMedisFormUpdateModel, RekamMedisUpdateModel } from '../../../api/rekammedis/model';
 import { CommonModule } from '@angular/common';
+import { PasienStore } from '../List/hook/pasien.store';
 
 export type RekamMedisUpdateStateType = {
   rekamMedis: RekamMedisUpdateModel;
@@ -23,7 +24,7 @@ export type RekamMedisUpdateStateType = {
   templateUrl: './update.html',
   styleUrl: './update.css',
 })
-export class Update implements  OnChanges {
+export class Update implements OnInit, OnChanges {
   @Input() id: string = '';
   @Input() isDialogOpen = false;
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
@@ -37,9 +38,13 @@ export class Update implements  OnChanges {
 
   formRekamMedis: FormGroup;
 
-  constructor(private fb: FormBuilder, private rekamMedisService: RekamMedisService) {
+  constructor(
+    private fb: FormBuilder,
+    private rekamMedisService: RekamMedisService,
+    public pasien: PasienStore
+  ) {
     this.formRekamMedis = this.fb.group({
-      nama: ['', Validators.required],
+      pasien: ['', Validators.required],
       tanggal: ['', Validators.required],
       keluhan: ['', Validators.required],
       dokter: ['', Validators.required],
@@ -55,14 +60,20 @@ export class Update implements  OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.fetchRekamMedisById();
+    this.pasien.fetchPasienOptions();
   }
-
+  ngOnInit() {
+    this.pasien.fetchPasienOptions();
+  }
+  get getState() {
+    return this.pasien.getState();
+  }
 
   async fetchRekamMedisById() {
     this.rekamMedisService.getRekamMedisById(this.id, {
       onSuccess: (data: any) => {
         this.formRekamMedis.patchValue({
-          nama: data.pasien?.nama,
+          pasien: data.pasien?._id,
           tanggal: data.tanggal.substring(0, 10),
           keluhan: data.keluhan,
           dokter: data.dokter,
@@ -108,4 +119,3 @@ export class Update implements  OnChanges {
     this.isDialogOpenChange.emit(false);
   }
 }
-
