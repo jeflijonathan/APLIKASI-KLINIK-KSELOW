@@ -6,19 +6,33 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
 import { Update } from './Update/update';
 import { Delete } from './Delete/Delete';
+import { Detail } from './Detail/Detail';
 
 @Component({
   selector: 'app-rekam-medis',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Create, Update, Delete],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DatePipe,
+    Create,
+    Update,
+    Delete,
+    Detail,
+  ],
   templateUrl: './rekam-medis.html',
   styleUrls: ['./rekam-medis.css'],
 })
 export class RekamMedisPage implements OnInit {
   Math = Math;
-  isDialogOpen = false;
-  isDialogUpdateOpen = false;
+  isDialogOpen: boolean = false;
+  isDialogUpdateOpen: boolean = false;
+  isDetailOpen: boolean = false;
   updateId: string = '';
+  detailId: string = '';
+  isDialogDetailOpen = false;
+
   data = (Math = Math);
   String = String;
   constructor(private cd: ChangeDetectorRef, public rekammedisStore: RekammedisStore) {}
@@ -46,6 +60,11 @@ export class RekamMedisPage implements OnInit {
   openUpdateRekamMedisDialog(id: string | undefined = 'kosong') {
     this.isDialogUpdateOpen = !this.isDialogUpdateOpen;
     this.updateId = id;
+  }
+
+  openDetailDialog(id: string) {
+    this.detailId = id;
+    this.isDetailOpen = true;
   }
 
   trackById(index: number, item: RekamMedisModel) {

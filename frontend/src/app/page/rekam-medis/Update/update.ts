@@ -76,7 +76,7 @@ export class Update implements OnInit, OnChanges {
       onSuccess: (data: any) => {
         this.formRekamMedis.patchValue({
           pasien: data.pasien?._id,
-          tanggal: data.tanggal.substring(0, 10),
+          tanggal: data.tanggal?.substring(0, 10) || '',
           keluhan: data.keluhan,
           dokter: data.dokter,
           beratBadan: data.beratBadan,

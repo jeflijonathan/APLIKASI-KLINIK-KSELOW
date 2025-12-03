@@ -95,6 +95,12 @@
                       >
                         Edit
                       </button>
+                      <button
+                        class="btn btn-sm btn-info me-2"
+                        (click)="openDetailDialog(String(rekammedis._id))"
+                      >
+                        Detail
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -130,11 +136,7 @@
                   <li
                     class="page-item"
                     [class.disabled]="pagination.currentPage === pagination.totalPages"
-                  >
-                    <button class="page-link" (click)="onPageChange(pagination.currentPage + 1)">
-                      ›
-                    </button>
-                  </li>
+                  ></li>
                 </ul>
               </nav>
             </div>
@@ -150,6 +152,9 @@
           [id]="updateId"
           [(isDialogOpen)]="isDialogUpdateOpen"
         ></app-update-rekam-medis>
+      </div>
+      <div class="row">
+        <app-detail [id]="detailId" [(opened)]="isDetailOpen"></app-detail>
       </div>
     </div>
   </div>
