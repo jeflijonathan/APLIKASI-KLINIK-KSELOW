@@ -7,6 +7,7 @@ import rekamMedisRouter from "#routes/rekam_medis_router.js";
 
 env.config();
 new DB();
+
 const app = express();
 
 app.use((req, res, next) => {
@@ -29,4 +30,6 @@ app.use("/api", rekamMedisRouter);
 const HOST = process.env.APP_HOST || "http://localhost";
 const PORT = process.env.APP_PORT || 3000;
 
-app.listen(PORT, () => console.log(`Server running on port ${HOST}:${PORT} `));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${HOST}:${PORT} `);
+});

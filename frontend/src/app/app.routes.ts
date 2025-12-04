@@ -1,15 +1,20 @@
 import { Routes } from '@angular/router';
-import { PasienPage } from './page/pasien/pasien-page';
-import { LoginComponent } from './auth/login.component';
-import { RegisterComponent } from './auth/register.component';
-import { LoginPage } from './page/login/login-page';
+import { LayoutAuth } from './layout/auth/auth';
 import { LayoutMain } from './layout/main/layout-main';
+import { PasienPage } from './page/pasien/pasien-page';
 import { RekamMedisPage } from './page/rekam-medis/rekam-medis';
 import { authGuard } from './guards/auth.guard';
+import { LoginPage } from './page/login/login-page';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  {
+    path: '',
+    component: LayoutAuth,
+    children: [
+      { path: '', component: LoginPage },
+      // { path: 'register', component: RegisterPage } // opsional
+    ],
+  },
   {
     path: '',
     component: LayoutMain,
@@ -19,4 +24,5 @@ export const routes: Routes = [
       { path: 'rekam-medis', component: RekamMedisPage },
     ],
   },
+  { path: '**', redirectTo: '' }, // fallback
 ];

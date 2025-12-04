@@ -6,6 +6,7 @@ import {
   OnChanges,
   SimpleChanges,
   signal,
+  inject,
 } from '@angular/core';
 import { Dialog } from '../../../common/components/dialog/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -29,6 +30,7 @@ export class Update implements OnChanges {
   @Input() id: string = '';
   @Input() isDialogOpen = false;
 
+  private fb = inject(FormBuilder);
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
   @Output() closed = new EventEmitter<void>();
 
@@ -39,11 +41,7 @@ export class Update implements OnChanges {
 
   formPasien: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private pasienService: PasienService,
-    public pasienStore: PasienStore
-  ) {
+  constructor(private pasienService: PasienService, public pasienStore: PasienStore) {
     this.formPasien = this.fb.group({
       nama: ['', Validators.required],
       tanggal_lahir: ['', Validators.required],

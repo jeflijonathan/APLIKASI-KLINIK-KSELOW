@@ -1,5 +1,6 @@
 import User from "#models/user.model.js";
 import bcrypt from "bcryptjs";
+import generateToken, { verifyToken } from "../utils/jwt.js";
 
 class UserController {
   static async register(req, res) {
@@ -11,29 +12,25 @@ class UserController {
       if (!password) errors.push("password is required");
       if (!role) errors.push("role is required");
 
-      if (errors.length > 0) {
+      if (errors.length > 0)
         return res.status(400).json({
           status: false,
           statusCode: 400,
           message: "Bad Request",
           details: errors,
         });
-      }
 
       const existingUser = await User.findOne({
         $or: [{ username }, { email }],
       });
-
-      if (existingUser) {
+      if (existingUser)
         return res.status(400).json({
           status: false,
           statusCode: 400,
           message: "Username or Email already registered",
         });
-      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const newUser = await User.create({
         username,
         email,
@@ -44,7 +41,7 @@ class UserController {
       return res.status(201).json({
         status: true,
         statusCode: 201,
-        message: `akun berhasil dibuat sebagai ${role}`,
+        message: `Akun berhasil dibuat sebagai ${role}`,
         data: {
           id: newUser._id,
           username: newUser.username,
@@ -62,38 +59,56 @@ class UserController {
     }
   }
 
+  // middleware authenticate
+  static authenticate(req, res, next) {
+    const header = req.headers["authorization"];
+    if (!header)
+      return res.status(401).json({ message: "Token tidak ditemukan" });
+
+    const parts = header.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Bearer")
+      return res.status(401).json({ message: "Format token salah" });
+
+    const token = parts[1];
+
+    try {
+      const decoded = verifyToken(token);
+      req.user = decoded;
+      next();
+    } catch (err) {
+      return res.status(401).json({ message: "Token tidak valid" });
+    }
+  }
+
   static async login(req, res) {
     try {
       const { identifier, password } = req.body;
-
-      if (!identifier || !password) {
+      if (!identifier || !password)
         return res.status(400).json({
           status: false,
           statusCode: 400,
-          message: "identifier and password are required",
+          message: "Identifier and password are required",
         });
-      }
 
       const user = await User.findOne({
         $or: [{ username: identifier }, { email: identifier }],
       });
 
-      if (!user) {
-        return res.status(404).json({
-          status: false,
-          statusCode: 404,
-          message: "User not found",
-        });
-      }
+      if (!user)
+        return res
+          .status(200)
+          .json({ status: false, statusCode: 200, message: "User not found" });
 
       const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        return res.status(401).json({
+      if (!validPassword)
+        return res.status(200).json({
           status: false,
-          statusCode: 401,
+          statusCode: 200,
           message: "Invalid password",
         });
-      }
+
+      const token = generateToken(user);
+
       return res.status(200).json({
         status: true,
         statusCode: 200,
@@ -103,6 +118,7 @@ class UserController {
           username: user.username,
           email: user.email,
           role: user.role,
+          token,
         },
       });
     } catch (err) {

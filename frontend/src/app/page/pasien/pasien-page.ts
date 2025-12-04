@@ -2,9 +2,9 @@ import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { PasienModel } from '../../api/pasien/model';
 import { PasienStore } from './List/hook/pasien.store';
 import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Create } from './Create/create';
 import { Update } from './Update/update';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-pasien-page',
@@ -47,8 +47,8 @@ export class PasienPage implements OnInit {
   }
 
   onPasienSaved() {
-  this.isDialogOpen = false;
-  this.pasienStore.fetchPasien();
+    this.isDialogOpen = false;
+    this.pasienStore.fetchPasien();
   }
 
   trackById(index: number, item: PasienModel) {

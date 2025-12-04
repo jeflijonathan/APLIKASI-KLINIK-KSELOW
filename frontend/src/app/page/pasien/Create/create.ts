@@ -1,31 +1,28 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Dialog } from '../../../common/components/dialog/dialog';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-create',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, Dialog],
   templateUrl: './create.html',
-  styleUrl: './create.css',
 })
 export class Create {
   @Input() isDialogOpen = false;
   @Output() isDialogOpenChange = new EventEmitter<boolean>();
   @Output() submitted = new EventEmitter<void>();
   @Output() closed = new EventEmitter<void>();
+  private fb = inject(FormBuilder);
+  formPasien: FormGroup = this.fb.group({
+    nama: ['', Validators.required],
+    tanggal_lahir: ['', Validators.required],
+    jenis_kelamin: ['', Validators.required],
+    asuransi: ['', Validators.required],
+  });
 
-  formPasien: FormGroup;
-
-  constructor(private fb: FormBuilder) {
-    this.formPasien = this.fb.group({
-      nama: ['', Validators.required],
-      tanggal_lahir: ['', Validators.required],
-      jenis_kelamin: ['', Validators.required],
-      asuransi: ['', Validators.required],
-    });
-  }
+  constructor() {}
 
   async submitForm() {
     this.formPasien.markAllAsTouched();
@@ -47,11 +44,11 @@ export class Create {
 
       if (res.ok) {
         alert('Data pasien berhasil disimpan!');
-        
+
         this.formPasien.reset();
         this.isDialogOpen = false;
         this.isDialogOpenChange.emit(false);
-        this.submitted.emit(); 
+        this.submitted.emit();
       } else {
         alert('Error: ' + (data.message || 'Gagal menyimpan data'));
       }

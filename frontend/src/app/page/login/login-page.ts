@@ -1,31 +1,70 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { API } from '../../api/service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../api/auth/service';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login-page.html',
   styleUrls: ['./login-page.css'],
 })
 export class LoginPage {
-  identifier = '';
-  password = '';
+  state = signal({
+    errorMessage: '',
+  });
+  private router = inject(Router);
+  form;
+  loading: boolean = false;
 
-  constructor(private api: API, private router: Router) {}
+  constructor(private fb: FormBuilder, private authService: AuthService) {
+    this.form = this.fb.group({
+      identifier: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+  }
 
-  async login(e?: Event) {
-    if (e) e.preventDefault();
-    const res: any = await this.api.POST('/login', { identifier: this.identifier, password: this.password });
-    if (res && res.status) {
-      localStorage.setItem('user', JSON.stringify(res.data));
-      this.router.navigate(['/pasien']);
-    } else {
-      const msg = res && res.message ? res.message : 'Login failed';
-      alert(msg);
+  get errorMessage() {
+    return this.state().errorMessage;
+  }
+
+  handleLogin() {
+    this.loading = true;
+    if (this.form.invalid) {
+      return;
     }
+
+    const loginData = {
+      identifier: this.form.value.identifier!,
+      password: this.form.value.password!,
+    };
+    console.log('error');
+
+    this.authService.Login(loginData, {
+      onSuccess: (data) => {
+        this.state.update((prev) => ({
+          ...prev,
+          errorMessage: '',
+        }));
+        localStorage.setItem('email', data.email);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('id_user', data.id);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
+        this.router.navigate(['/pasien']);
+        console.log(data);
+        this.loading = false;
+      },
+      onError: (err) => {
+        console.log('error');
+        this.state.update((prev) => ({
+          ...prev,
+          errorMessage: 'invalid password or username',
+        }));
+        this.loading = false;
+      },
+    });
   }
 }

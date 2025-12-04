@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../api/auth/service';
 
 @Component({
   selector: 'app-layout-main',
@@ -12,14 +12,17 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LayoutMain {
   isLoggedIn = false;
+  username = localStorage.getItem('username');
 
   constructor(private auth: AuthService, private router: Router) {
-    this.isLoggedIn = this.auth.isLoggedIn();
-    this.auth.user$.subscribe((u) => (this.isLoggedIn = !!u));
+    this.auth.isLoggedIn();
   }
 
   logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    this.router.navigate(['/']);
   }
 }
