@@ -21,6 +21,7 @@ export class Dialog {
 
   onSubmit() {
     this.submitted.emit(true);
+    this.closeDialog();
 
     if (this.dialogRef) {
       this.dialogRef.close(true);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserCreateModel, UserFormUpdateModel, UserModel, UserUpdateModel } from './model';
 import { DataWithPagination, FetchCallback, FetchParams, APIResponse } from '../../common/type';
-import { API } from '../service';
+import { API } from '../pasien/service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,7 @@ export class UserService {
   private basePath = '/users';
 
   constructor(private api: API) {}
+
 
   async getUserData(
     callback: FetchCallback<DataWithPagination<UserModel[]>>,
@@ -29,7 +30,7 @@ export class UserService {
   }
 
   async createUser(body: UserCreateModel, callback: FetchCallback<UserModel>) {
-    const target = `${this.basePath}/register`;
+    const target = `/register`;
     const res = await this.api.POST<UserModel>(target, body);
 
     if (res?.status) {
@@ -60,6 +61,19 @@ export class UserService {
 
     if (res?.status) {
       callback.onSuccess(res.data);
+    } else {
+      callback.onError(res?.message || 'Unknown Error');
+    }
+
+    callback?.onFullfilled && callback.onFullfilled();
+  }
+
+  async deleteUser(id: string, callback: FetchCallback<void>) {
+    const target = `${this.basePath}/${id}`;
+    const res = await this.api.DELETE<void>(target);
+
+    if (res?.status) {
+      callback.onSuccess(undefined);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }

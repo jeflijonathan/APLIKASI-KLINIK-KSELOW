@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import UserService from '../../../../api/user';
-import { PaginationType } from '../../../../common/type';
-import { UserModel } from '../../../../api/user/model';
+import UserService from '../../../api/user';
+import { PaginationType } from '../../../common/type';
+import { UserModel } from '../../../api/user/model';
 
 export interface StateType {
   userList: UserModel[];
@@ -64,7 +64,7 @@ export class UserStore {
 
     await this.userService.getUserData(
       {
-        onSuccess: (res) => {
+        onSuccess: (res: { data: UserModel[]; pagination: PaginationType }) => {
           this.state.update((prev) => ({
             ...prev,
             userList: res.data,
@@ -78,7 +78,7 @@ export class UserStore {
             isLoading: false,
           }));
         },
-        onError: (error) => {
+        onError: (error: any) => {
           this.state.update((s) => ({
             ...s,
             isLoading: false,
@@ -89,5 +89,25 @@ export class UserStore {
       },
       { params }
     );
+  }
+
+  async deleteUser(id: string) {
+    this.state.update((s) => ({ ...s, isLoading: true, errorMessage: '' }));
+
+    await this.userService.deleteUser(id, {
+      onSuccess: () => {
+        alert('User berhasil dihapus');
+        this.fetchUsers();
+      },
+      onError: (error: any) => {
+        this.state.update((s) => ({
+          ...s,
+          isLoading: false,
+          errorMessage: error,
+        }));
+        alert('Error: ' + error);
+      },
+      onFullfilled: () => {},
+    });
   }
 }

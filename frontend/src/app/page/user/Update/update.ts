@@ -1,11 +1,10 @@
-import { Component, Input, OnInit, Output, signal, SimpleChanges, OnChanges } from '@angular/core';
-import { EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, signal, SimpleChanges, OnChanges, EventEmitter } from '@angular/core';
 import { Dialog } from '../../../common/components/dialog/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import UserService from '../../../api/user';
 import { UserUpdateModel } from '../../../api/user/model';
 import { CommonModule } from '@angular/common';
-import { UserStore } from '../List/hook/user.store';
+import { UserStore } from '../List/user.store';
 
 export type UserUpdateStateType = {
   user: UserUpdateModel;
@@ -14,9 +13,10 @@ export type UserUpdateStateType = {
 
 @Component({
   selector: 'app-update-user',
+  standalone: true,
   imports: [Dialog, CommonModule, ReactiveFormsModule],
   templateUrl: './update.html',
-  styleUrl: './update.css',
+  styleUrls: ['./update.css'],
 })
 export class Update implements OnInit, OnChanges {
   @Input() id: string = '';

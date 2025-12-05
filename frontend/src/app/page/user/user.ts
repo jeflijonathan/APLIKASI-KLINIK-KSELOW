@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { UserModel } from '../../api/user/model';
-import { UserStore } from './List/hook/user.store';
+import { UserStore } from './List/user.store';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Update } from './Update/update';
@@ -82,5 +82,18 @@ export class UserPage implements OnInit {
 
   countByRole(role: string): number {
     return this.dataUsers.filter(user => user.role === role).length;
+  }
+
+  deleteUser(id: string | undefined) {
+    if (!id) {
+      alert('ID tidak valid');
+      return;
+    }
+
+    if (!confirm('Apakah Anda yakin ingin menghapus user ini?')) {
+      return;
+    }
+
+    this.userStore.deleteUser(id);
   }
 }

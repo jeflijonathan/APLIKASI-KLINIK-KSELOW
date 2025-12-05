@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import UserService from '../../../api/user';
 import { UserCreateModel } from '../../../api/user/model';
 import { CommonModule } from '@angular/common';
-import { UserStore } from '../List/hook/user.store';
+import { UserStore } from '../List/user.store';
 
 @Component({
   selector: 'app-create-user',
+  standalone: true,
   imports: [Dialog, CommonModule, ReactiveFormsModule],
   templateUrl: './create.html',
-  styleUrl: './create.css',
+  styleUrls: ['./create.css'],
 })
 export class Create implements OnInit {
   @Input() isDialogOpen = false;
