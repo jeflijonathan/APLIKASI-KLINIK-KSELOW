@@ -43,13 +43,7 @@ export class Create implements OnInit {
   }
 
   submitForm() {
-    console.log('Submit clicked');
-    console.log('Form valid:', this.formUser.valid);
-    console.log('Form errors:', this.formUser.errors);
-    console.log('Form value:', this.formUser.value);
-
-    // Mark all fields as touched untuk show validation
-    Object.keys(this.formUser.controls).forEach(key => {
+    Object.keys(this.formUser.controls).forEach((key) => {
       this.formUser.get(key)?.markAsTouched();
     });
 
@@ -66,8 +60,6 @@ export class Create implements OnInit {
 
     this.userService.createUser(createData, {
       onSuccess: (res) => {
-        console.log('User created successfully:', res);
-        // Delay 1 detik sebelum fetch untuk memastikan data tersimpan
         setTimeout(() => {
           this.userStore.fetchUsers();
         }, 1000);
