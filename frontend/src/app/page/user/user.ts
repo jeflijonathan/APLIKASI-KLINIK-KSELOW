@@ -10,14 +10,7 @@ import { Create } from './Create/create';
   selector: 'app-user',
   standalone: true,
 
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    DatePipe,
-    Update,
-    Create,
-  ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Update, Create],
   templateUrl: './user.html',
   styleUrls: ['./user.css'],
 })
@@ -29,7 +22,7 @@ export class UserPage implements OnInit {
 
   data = (Math = Math);
   String = String;
-  
+
   constructor(private cd: ChangeDetectorRef, public userStore: UserStore) {}
 
   ngOnInit() {
@@ -81,7 +74,7 @@ export class UserPage implements OnInit {
   }
 
   countByRole(role: string): number {
-    return this.dataUsers.filter(user => user.role === role).length;
+    return this.dataUsers.filter((user) => user.role === role).length;
   }
 
   deleteUser(id: string | undefined) {
