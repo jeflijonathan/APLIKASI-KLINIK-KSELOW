@@ -67,6 +67,7 @@ export class Create implements OnInit {
     this.userService.createUser(createData, {
       onSuccess: (res) => {
         console.log('User created successfully:', res);
+        // Delay 1 detik sebelum fetch untuk memastikan data tersimpan
         setTimeout(() => {
           this.userStore.fetchUsers();
         }, 1000);
