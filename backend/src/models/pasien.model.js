@@ -50,7 +50,6 @@ const pasienSchema = new mongoose.Schema(
   }
 );
 
-// Index untuk pencarian lebih cepat
 pasienSchema.index({ nama: 1 });
 pasienSchema.index({ isActive: 1 });
 

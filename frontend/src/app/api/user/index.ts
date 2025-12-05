@@ -1,21 +1,23 @@
-import { DataWithPagination, FetchCallback, FetchParams } from '../../common/type';
-import { API } from '../pasien/service';
-import { RekamMedisCreateModel, RekamMedisModel } from './model';
 import { Injectable } from '@angular/core';
+import { UserCreateModel, UserFormUpdateModel, UserModel, UserUpdateModel } from './model';
+import { DataWithPagination, FetchCallback, FetchParams, APIResponse } from '../../common/type';
+import { API } from '../pasien/service';
 
 @Injectable({
   providedIn: 'root',
 })
-class RekamMedisService {
-  basePath = '/rekammedis';
+export class UserService {
+  private basePath = '/users';
 
   constructor(private api: API) {}
 
-  async getRekamMedis(
-    callback: FetchCallback<DataWithPagination<RekamMedisModel[]>>,
+
+  async getUserData(
+    callback: FetchCallback<DataWithPagination<UserModel[]>>,
     params?: FetchParams
   ) {
-    const res = await this.api.GET<RekamMedisModel[]>(this.basePath, params?.params);
+    const res = await this.api.GET<UserModel[]>(this.basePath, params?.params);
+
     if (res?.status) {
       callback.onSuccess({
         data: res.data,
@@ -27,57 +29,57 @@ class RekamMedisService {
     callback?.onFullfilled && callback.onFullfilled();
   }
 
-  async getRekamMedisById(id: string, callback: FetchCallback<RekamMedisModel>) {
-    const target = `${this.basePath}/${id}`;
-    const res = await this.api.GET<RekamMedisModel>(target);
+  async createUser(body: UserCreateModel, callback: FetchCallback<UserModel>) {
+    const target = `/register`;
+    const res = await this.api.POST<UserModel>(target, body);
 
     if (res?.status) {
       callback.onSuccess(res.data);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
+
     callback?.onFullfilled && callback.onFullfilled();
   }
 
-  async createRekamMedis(callback: FetchCallback<RekamMedisModel>, data: RekamMedisCreateModel) {
-    const target = `${this.basePath}`;
-    const res = await this.api.POST<RekamMedisModel>(target, data);
+  async getUserById(id: string, callback: FetchCallback<UserUpdateModel>) {
+    const target = `${this.basePath}/${id}`;
+    const res = await this.api.GET<UserUpdateModel>(target);
 
     if (res?.status) {
       callback.onSuccess(res.data);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
+
     callback?.onFullfilled && callback.onFullfilled();
   }
 
-  async updateRekamMedis(
-    id: string,
-    data: RekamMedisCreateModel,
-    callback: FetchCallback<RekamMedisModel>
-  ) {
+  async updateUser(id: string, body: UserUpdateModel, callback: FetchCallback<UserUpdateModel>) {
     const target = `${this.basePath}/${id}`;
-    const res = await this.api.PUT<RekamMedisModel>(target, data);
+    const res = await this.api.PUT<UserUpdateModel>(target, body);
 
     if (res?.status) {
       callback.onSuccess(res.data);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
+
     callback?.onFullfilled && callback.onFullfilled();
   }
 
-  async deleteRekamMedis(id: string, callback: FetchCallback<[]>) {
+  async deleteUser(id: string, callback: FetchCallback<void>) {
     const target = `${this.basePath}/${id}`;
-    const res = await this.api.DELETE<[]>(target);
+    const res = await this.api.DELETE<void>(target);
 
     if (res?.status) {
-      callback.onSuccess([]);
+      callback.onSuccess(undefined);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
+
     callback?.onFullfilled && callback.onFullfilled();
   }
 }
 
-export default RekamMedisService;
+export default UserService;

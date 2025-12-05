@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { PasienCreateModel, PasienFormUpdateModel, PasienModel, PasienUpdateModel } from './model';
 import { DataWithPagination, FetchCallback, FetchParams, APIResponse } from '../../common/type';
-import { API } from '../service';
+import { API } from './service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +29,7 @@ export class PasienService {
   }
 
   async getPasienOptions(callback: FetchCallback<DataWithPagination<PasienModel[]>>) {
-    const target = `${this.basePath}/options`;
+    const target = `/options${this.basePath}`;
     const res = await this.api.GET<PasienModel[]>(target);
 
     if (res?.status) {
@@ -80,6 +80,19 @@ export class PasienService {
 
     if (res?.status) {
       callback.onSuccess(res.data);
+    } else {
+      callback.onError(res?.message || 'Unknown Error');
+    }
+
+    callback?.onFullfilled && callback.onFullfilled();
+  }
+
+  async deletePasien(id: string, callback: FetchCallback<void>) {
+    const target = `${this.basePath}/${id}`;
+    const res = await this.api.DELETE<void>(target);
+
+    if (res?.status) {
+      callback.onSuccess(undefined);
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }

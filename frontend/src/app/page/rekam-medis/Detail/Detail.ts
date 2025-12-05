@@ -30,7 +30,7 @@ import { RekamMedisModel } from '../../../api/rekammedis/model';
             </tr>
             <tr>
               <th>Nama Pasien</th>
-              <td>{{ getState.rekammedis.pasien?.nama || '-' }}</td>
+              <td>{{ getState.rekammedis.pasien.nama || '' }}</td>
             </tr>
             <tr>
               <th>Diagnosa</th>
@@ -86,7 +86,7 @@ export class Detail {
   @Input() id: string = '';
   @Output() openedChange = new EventEmitter<boolean>();
   state = signal({
-    rekammedis: {} as RekamMedisModel,
+    rekammedis: { pasien: { nama: '' } } as RekamMedisModel,
     loading: false,
   });
 

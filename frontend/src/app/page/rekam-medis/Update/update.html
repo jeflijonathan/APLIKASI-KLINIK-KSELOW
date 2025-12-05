@@ -19,7 +19,7 @@
           <option [ngValue]="p._id">{{ p.nama }}</option>
           }
         </select>
-        @if(formRekamMedis.get('nama')?.touched && formRekamMedis.get('nama')?.invalid) {
+        @if(formRekamMedis.get('pasien')?.touched && formRekamMedis.get('pasien')?.invalid) {
         <div class="text-danger">Nama harus diisi.</div>
         }
       </div>
