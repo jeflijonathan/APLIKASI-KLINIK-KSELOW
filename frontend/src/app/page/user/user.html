@@ -6,7 +6,6 @@
     </div>
   </div>
 
-  <!-- Search and Add User -->
   <div class="row mb-3">
     <div class="col-md-8">
       <div class="input-group">
@@ -43,7 +42,6 @@
 
   <div class="container-fluid">
     <div class="row mb-4 p-3 border rounded bg-light">
-
       <div class="row">
         <div class="col-12">
           <div class="table-responsive">
@@ -82,7 +80,7 @@
                     </div>
                   </td>
                   <td>
-                    <span 
+                    <span
                       [ngClass]="{
                         'badge bg-danger': user.role === 'ADMIN',
                         'badge bg-info': user.role === 'DOKTER',
@@ -107,14 +105,14 @@
                         title="Edit User"
                         (click)="openUpdateUserDialog(String(user._id))"
                       >
-                        <i class="bi bi-pencil"></i>
+                        edit
                       </button>
                       <button
                         class="btn btn-sm btn-danger"
                         title="Hapus User"
                         (click)="deleteUser(user._id)"
                       >
-                        <i class="bi bi-trash"></i>
+                        remove
                       </button>
                     </div>
                   </td>
@@ -160,10 +158,7 @@
                     class="page-item"
                     [class.disabled]="pagination.currentPage === pagination.totalPages"
                   >
-                    <button
-                      class="page-link"
-                      (click)="onPageChange(pagination.totalPages)"
-                    >
+                    <button class="page-link" (click)="onPageChange(pagination.totalPages)">
                       »
                     </button>
                   </li>
@@ -178,10 +173,7 @@
         <app-create-user [(isDialogOpen)]="isDialogOpen"></app-create-user>
       </div>
       <div class="row">
-        <app-update-user
-          [id]="updateId"
-          [(isDialogOpen)]="isDialogUpdateOpen"
-        ></app-update-user>
+        <app-update-user [id]="updateId" [(isDialogOpen)]="isDialogUpdateOpen"></app-update-user>
       </div>
     </div>
   </div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { UserCreateModel, UserFormUpdateModel, UserModel, UserUpdateModel } from './model';
 import { DataWithPagination, FetchCallback, FetchParams, APIResponse } from '../../common/type';
-import { API } from '../pasien/service';
+import { API } from '../service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,6 @@ export class UserService {
   private basePath = '/users';
 
   constructor(private api: API) {}
-
 
   async getUserData(
     callback: FetchCallback<DataWithPagination<UserModel[]>>,

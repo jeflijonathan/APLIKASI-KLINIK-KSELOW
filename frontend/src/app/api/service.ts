@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, firstValueFrom, throwError } from 'rxjs';
-import { APIResponse } from '../../common/type';
-import { environment } from '../../../environments/environment';
+import { APIResponse } from '../common/type';
 
 @Injectable({
   providedIn: 'root',
 })
 export class API {
-  private baseURL = environment.baseUrl;
+  private baseURL = 'http://localhost:3000/api';
 
   private headers = new HttpHeaders({
     Accept: 'application/json',

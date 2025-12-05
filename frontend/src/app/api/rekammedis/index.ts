@@ -1,5 +1,5 @@
 import { DataWithPagination, FetchCallback, FetchParams } from '../../common/type';
-import { API } from '../pasien/service';
+import { API } from '../service';
 import { RekamMedisCreateModel, RekamMedisModel } from './model';
 import { Injectable } from '@angular/core';
 
