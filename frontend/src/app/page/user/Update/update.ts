@@ -1,4 +1,13 @@
-import { Component, Input, OnInit, Output, signal, SimpleChanges, OnChanges, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  signal,
+  SimpleChanges,
+  OnChanges,
+  EventEmitter,
+} from '@angular/core';
 import { Dialog } from '../../../common/components/dialog/dialog';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import UserService from '../../../api/user';
@@ -54,7 +63,7 @@ export class Update implements OnInit, OnChanges {
 
   async fetchUserById() {
     if (!this.id || this.id === 'kosong') return;
-    
+
     this.userService.getUserById(this.id, {
       onSuccess: (data: any) => {
         this.formUser.patchValue({
@@ -84,7 +93,6 @@ export class Update implements OnInit, OnChanges {
       return;
     }
 
-    // Remove password jika kosong
     if (!updateData.password) {
       delete updateData.password;
     }

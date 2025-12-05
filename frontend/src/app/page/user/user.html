@@ -51,10 +51,7 @@
               {{ state.errorMessage }}
             </div>
             @if(!state.isLoading && dataUsers.length > 0) {
-            <table
-              *ngIf="!state.isLoading && dataUsers.length > 0"
-              class="table table-striped table-hover"
-            >
+            <table class="table table-striped table-hover">
               <thead class="table-dark">
                 <tr>
                   <th>USER</th>
