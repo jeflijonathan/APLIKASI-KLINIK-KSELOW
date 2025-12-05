@@ -1,0 +1,188 @@
+<div class="container-fluid p-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1>User Management</h1>
+      <p class="text-muted">Kelola pengguna dan hak akses sistem</p>
+    </div>
+  </div>
+
+  <!-- Search and Add User -->
+  <div class="row mb-3">
+    <div class="col-md-8">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Cari user (nama, email)..."
+          [ngModel]="state.search"
+          (ngModelChange)="userStore.updateSearch($event)"
+          (keyup.enter)="onSearch()"
+        />
+      </div>
+    </div>
+    <div class="col-md-4 d-flex gap-2 justify-content-end">
+      <select
+        class="form-select"
+        style="max-width: 150px"
+        [ngModel]="pagination.limit"
+        (ngModelChange)="onLimitChange($event)"
+      >
+        <option [ngValue]="10">10 Items</option>
+        <option [ngValue]="25">25 Items</option>
+        <option [ngValue]="50">50 Items</option>
+        <option [ngValue]="100">100 Items</option>
+      </select>
+      <button class="btn btn-primary" (click)="openAddUserDialog()">
+        <i class="bi bi-plus"></i> Tambah User
+      </button>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row mb-4 p-3 border rounded bg-light">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <div *ngIf="state.isLoading" class="alert alert-info">Memuat data...</div>
+
+            <div *ngIf="state.errorMessage" class="alert alert-danger">
+              {{ state.errorMessage }}
+            </div>
+            @if(!state.isLoading && dataUsers.length > 0) {
+            <table
+              *ngIf="!state.isLoading && dataUsers.length > 0"
+              class="table table-striped table-hover"
+            >
+              <thead class="table-dark">
+                <tr>
+                  <th>USER</th>
+                  <th>ROLE</th>
+                  <th>STATUS</th>
+                  <th>LAST LOGIN</th>
+                  <th>CREATED</th>
+                  <th>AKSI</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let user of dataUsers; let i = index; trackBy: trackById">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="avatar-circle bg-primary text-white">
+                        {{ user.username.charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <div class="fw-bold">{{ user.username }}</div>
+                        <div class="text-muted small">{{ user.email }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span 
+                      [ngClass]="{
+                        'badge bg-danger': user.role === 'ADMIN',
+                        'badge bg-info': user.role === 'DOKTER',
+                        'badge bg-success': user.role === 'PERAWAT',
+                        'badge bg-warning': user.role === 'KASIR'
+                      }"
+                    >
+                      {{ user.role }}
+                    </span>
+                  </td>
+                  <td>
+                    <span [ngClass]="user.isActive ? 'badge bg-success' : 'badge bg-secondary'">
+                      {{ user.isActive ? 'Aktif' : 'Non-Aktif' }}
+                    </span>
+                  </td>
+                  <td>-</td>
+                  <td>{{ user.createdAt | date : 'dd/MM/yyyy' }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button
+                        class="btn btn-sm btn-warning"
+                        title="Edit User"
+                        (click)="openUpdateUserDialog(String(user._id))"
+                      >
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        class="btn btn-sm btn-danger"
+                        title="Hapus User"
+                        (click)="deleteUser(user._id)"
+                      >
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            }@else {
+            <div class="alert alert-warning">Tidak ada data user</div>
+            }
+          </div>
+          @if(dataUsers.length > 0){
+          <div class="row mt-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted"
+                  >Menampilkan {{ (pagination.currentPage - 1) * pagination.limit + 1 }} -
+                  {{ Math.min(pagination.currentPage * pagination.limit, pagination.totalData) }}
+                  dari {{ pagination.totalData }} data</small
+                >
+              </div>
+              <nav>
+                <ul class="pagination mb-0">
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(1)">«</button>
+                  </li>
+                  <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+                    <button class="page-link" (click)="onPageChange(pagination.currentPage - 1)">
+                      ‹
+                    </button>
+                  </li>
+                  <li class="page-item active">
+                    <span class="page-link">{{ pagination.currentPage }}</span>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="pagination.currentPage === pagination.totalPages"
+                  >
+                    <button class="page-link" (click)="onPageChange(pagination.currentPage + 1)">
+                      ›
+                    </button>
+                  </li>
+                  <li
+                    class="page-item"
+                    [class.disabled]="pagination.currentPage === pagination.totalPages"
+                  >
+                    <button
+                      class="page-link"
+                      (click)="onPageChange(pagination.totalPages)"
+                    >
+                      »
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      <div class="row">
+        <app-create-user [(isDialogOpen)]="isDialogOpen"></app-create-user>
+      </div>
+      <div class="row">
+        <app-update-user
+          [id]="updateId"
+          [(isDialogOpen)]="isDialogUpdateOpen"
+        ></app-update-user>
+      </div>
+    </div>
+  </div>
+</div>
