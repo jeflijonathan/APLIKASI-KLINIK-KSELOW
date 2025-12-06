@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, firstValueFrom, throwError } from 'rxjs';
+import { catchError, firstValueFrom, throwError, tap } from 'rxjs';
 import { APIResponse } from '../common/type';
 
 @Injectable({
   providedIn: 'root',
 })
 export class API {
-  private baseURL = 'http://localhost:3000/api';
+  private baseURL = `http://localhost:3000/api`;
 
   private headers = new HttpHeaders({
     Accept: 'application/json',
@@ -16,10 +16,21 @@ export class API {
 
   constructor(private http: HttpClient) {}
 
+  private updateTokenHeader() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.headers = this.headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
+  private inspector(method: string, path: string, options: any) {}
+
   private async toPromise<T>(request: any): Promise<T> {
     return await firstValueFrom(
       request.pipe(
+        tap((res: any) => console.log('✅ RESPONSE:', res)),
         catchError((err) => {
+          console.error('❌ ERROR:', err);
           return throwError(() => err.error || err);
         })
       )
@@ -27,35 +38,57 @@ export class API {
   }
 
   async GET<T>(path: string, params?: any): Promise<APIResponse<T>> {
-    const req = this.http.get<APIResponse<T>>(`${this.baseURL}${path}`, {
+    const token = localStorage.getItem('token') ?? '';
+    if (token) {
+      this.headers = this.headers.set('Authorization', `Bearer ${token}`);
+    }
+    const options = {
       headers: this.headers,
       params,
-    });
+    };
 
-    return this.toPromise<APIResponse<T>>(req);
+    this.inspector('GET', path, options);
+
+    const req = this.http.get<APIResponse<T>>(`${this.baseURL}${path}`, options);
+    return this.toPromise(req);
   }
 
   async POST<T>(path: string, body: any): Promise<APIResponse<T>> {
-    const req = this.http.post<T>(`${this.baseURL}${path}`, body, {
-      headers: this.headers,
-    });
+    this.updateTokenHeader();
 
-    return this.toPromise<APIResponse<T>>(req);
+    const options = {
+      headers: this.headers,
+    };
+
+    this.inspector('POST', path, { ...options, body });
+
+    const req = this.http.post<T>(`${this.baseURL}${path}`, body, options);
+    return this.toPromise(req);
   }
 
   async PUT<T>(path: string, body: any): Promise<APIResponse<T>> {
-    const req = this.http.put<T>(`${this.baseURL}${path}`, body, {
-      headers: this.headers,
-    });
+    this.updateTokenHeader();
 
-    return this.toPromise<APIResponse<T>>(req);
+    const options = {
+      headers: this.headers,
+    };
+
+    this.inspector('PUT', path, { ...options, body });
+
+    const req = this.http.put<T>(`${this.baseURL}${path}`, body, options);
+    return this.toPromise(req);
   }
 
   async DELETE<T>(path: string): Promise<APIResponse<T>> {
-    const req = this.http.delete<T>(`${this.baseURL}${path}`, {
-      headers: this.headers,
-    });
+    this.updateTokenHeader();
 
-    return this.toPromise<APIResponse<T>>(req);
+    const options = {
+      headers: this.headers,
+    };
+
+    this.inspector('DELETE', path, options);
+
+    const req = this.http.delete<T>(`${this.baseURL}${path}`, options);
+    return this.toPromise(req);
   }
 }

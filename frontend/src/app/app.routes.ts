@@ -13,7 +13,7 @@ export const routes: Routes = [
       { path: 'pasien', component: PasienPage },
       { path: 'rekam-medis', component: RekamMedisPage },
       { path: 'user', component: UserPage },
-      {path: 'pasien/list', component: ListComponent},
+      { path: 'pasien/list', component: ListComponent },
     ],
   },
 ];

@@ -1,0 +1,43 @@
+<div class="card">
+  <div class="card-body">
+    <h2>Login Aplikasi Klinik</h2>
+    @if(errorMessage) {
+    <div class="alert alert-danger mt-2">{{ errorMessage }}</div>
+    }
+    <form [formGroup]="form" (ngSubmit)="handleLogin()">
+      <div class="mb-1 mt-1">
+        <label for="identifier">Username / Email</label>
+        <input
+          id="identifier"
+          type="text"
+          formControlName="identifier"
+          class="form-control"
+          placeholder="Masukkan username atau email"
+        />
+        @if (form.get('identifier')?.touched && form.get('identifier')?.hasError('required')) {
+        <small class="text-danger">Username wajib diisi</small>
+        }
+      </div>
+
+      <div class="mb-2 mt-1">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Masukkan password"
+        />
+        @if (form.get('password')?.touched && form.get('password')?.hasError('required')) {
+        <small class="text-danger">Password wajib diisi</small>
+        }
+      </div>
+
+      <div class="w-100 mt-4">
+        <button type="submit" class="btn btn-primary w-100" [disabled]="form.invalid || loading">
+          {{ loading ? 'Loading...' : 'Login' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
