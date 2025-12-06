@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
+    "dev": "node src/seeder/user.js && nodemon src/app.js",
+    "seed": "node src/seeder/user.js",
     "test": "jest",
     "build": "webpack --mode production",
     "lint": "eslint .",
