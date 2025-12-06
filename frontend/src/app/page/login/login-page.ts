@@ -52,7 +52,7 @@ export class LoginPage {
         localStorage.setItem('id_user', data.id);
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
-        this.router.navigate(['/dashboard/pasien']);
+        this.router.navigate(['/pasien']);
         console.log(data);
         this.loading = false;
       },
