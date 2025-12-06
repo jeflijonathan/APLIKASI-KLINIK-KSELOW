@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../api/auth/service';
 
 @Component({
   selector: 'app-layout-main',
@@ -9,4 +10,17 @@ import { CommonModule } from '@angular/common';
   templateUrl: './layout-main.html',
   styleUrls: ['./layout-main.css'],
 })
-export class LayoutMain {}
+export class LayoutMain {
+  isLoggedIn = false;
+  username = localStorage.getItem('username');
+
+  constructor(private router: Router) {}
+
+  logout() {
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    this.router.navigate(['/']);
+  }
+}

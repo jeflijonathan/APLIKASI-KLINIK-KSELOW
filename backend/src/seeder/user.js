@@ -16,19 +16,19 @@ export async function seedUsers() {
     const users = [
       {
         username: "admin",
-        email: "admin@example.com",
+        email: "admin@gmail.com",
         password: "admin123",
         role: "ADMIN",
       },
       {
         username: "dokter1",
-        email: "dokter1@example.com",
+        email: "dokter1@gmail.com",
         password: "dokter123",
         role: "DOKTER",
       },
       {
         username: "dokter2",
-        email: "dokter2@example.com",
+        email: "dokter2@gmail.com",
         password: "dokter456",
         role: "DOKTER",
       },
