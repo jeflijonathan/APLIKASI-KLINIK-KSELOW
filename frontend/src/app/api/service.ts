@@ -42,7 +42,6 @@ export class API {
   }
 
   async GET<T>(path: string, params?: any): Promise<APIResponse<T>> {
-    // this.updateTokenHeader();
     const token = localStorage.getItem('token') ?? '';
     if (token) {
       this.headers = this.headers.set('Authorization', `Bearer ${token}`);
