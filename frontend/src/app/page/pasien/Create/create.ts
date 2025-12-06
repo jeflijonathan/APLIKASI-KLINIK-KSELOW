@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Dialog } from '../../../common/components/dialog/dialog';
+import { API } from '../../../api/service';
 
 @Component({
   selector: 'app-create',
@@ -18,7 +19,7 @@ export class Create {
 
   formPasien: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private api: API) {
     this.formPasien = this.fb.group({
       nama: ['', Validators.required],
       tanggal_lahir: ['', Validators.required],
@@ -37,23 +38,15 @@ export class Create {
     const formData = this.formPasien.value;
 
     try {
-      const res = await fetch('http://localhost:3000/api/pasien', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const data = await this.api.POST('/pasien', formData);
 
-      const data = await res.json();
-
-      if (res.ok) {
+      if (data) {
         alert('Data pasien berhasil disimpan!');
         
         this.formPasien.reset();
         this.isDialogOpen = false;
         this.isDialogOpenChange.emit(false);
         this.submitted.emit(); 
-      } else {
-        alert('Error: ' + (data.message || 'Gagal menyimpan data'));
       }
     } catch (error) {
       alert('Kesalahan mengirim data: ' + error);
