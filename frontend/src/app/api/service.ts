@@ -28,9 +28,8 @@ export class API {
   private async toPromise<T>(request: any): Promise<T> {
     return await firstValueFrom(
       request.pipe(
-        tap((res: any) => console.log('✅ RESPONSE:', res)),
         catchError((err) => {
-          console.error('❌ ERROR:', err);
+          alert(`❌ ERROR: ${err}`);
           return throwError(() => err.error || err);
         })
       )
