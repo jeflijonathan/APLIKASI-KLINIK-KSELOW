@@ -10,10 +10,24 @@ new DB();
 
 const app = express();
 
+// CORS and relaxed CSP for local development
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:4200");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Development-only Content Security Policy (relaxed)
+  // This makes DevTools and inline scripts work during local development.
+  // Do NOT use this in production.
+  if (process.env.NODE_ENV !== "production") {
+    res.setHeader(
+      "Content-Security-Policy",
+      "default-src 'self' 'unsafe-inline' http://localhost:4200 http://localhost:3000; " +
+        "connect-src 'self' http://localhost:4200 http://localhost:3000 ws:; " +
+        "script-src 'self' 'unsafe-inline' http://localhost:4200;"
+    );
+  }
+
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }

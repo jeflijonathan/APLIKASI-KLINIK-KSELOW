@@ -83,6 +83,14 @@ class UserController {
   static async login(req, res) {
     try {
       const { identifier, password } = req.body;
+
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[DEBUG] Login attempt payload:", {
+          identifier,
+          password: password ? "***" : undefined,
+          rawBody: req.body,
+        });
+      }
       if (!identifier || !password)
         return res.status(400).json({
           status: false,

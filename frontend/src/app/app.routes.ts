@@ -8,7 +8,7 @@ import { LoginPage } from './page/login/login-page';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'login',
     component: LayoutAuth,
     children: [
       { path: '', component: LoginPage },
@@ -16,7 +16,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: '',
+    path: 'dashboard',
     component: LayoutMain,
     canActivate: [authGuard],
     children: [
@@ -24,5 +24,5 @@ export const routes: Routes = [
       { path: 'rekam-medis', component: RekamMedisPage },
     ],
   },
-  { path: '**', redirectTo: '' }, // fallback
+  { path: '**', redirectTo: 'login' },
 ];

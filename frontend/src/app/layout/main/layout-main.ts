@@ -14,9 +14,7 @@ export class LayoutMain {
   isLoggedIn = false;
   username = localStorage.getItem('username');
 
-  constructor(private auth: AuthService, private router: Router) {
-    this.auth.isLoggedIn();
-  }
+  constructor(private router: Router) {}
 
   logout() {
     localStorage.removeItem('username');

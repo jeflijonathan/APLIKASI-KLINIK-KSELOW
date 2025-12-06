@@ -40,7 +40,8 @@ export class LoginPage {
       identifier: this.form.value.identifier!,
       password: this.form.value.password!,
     };
-    console.log('error');
+    // Debug outgoing payload to ensure form values are correct
+    console.log('[DEBUG] Sending login payload:', loginData);
 
     this.authService.Login(loginData, {
       onSuccess: (data) => {
@@ -53,7 +54,7 @@ export class LoginPage {
         localStorage.setItem('id_user', data.id);
         localStorage.setItem('token', data.token);
         localStorage.setItem('role', data.role);
-        this.router.navigate(['/pasien']);
+        this.router.navigate(['/dashboard/pasien']);
         console.log(data);
         this.loading = false;
       },
