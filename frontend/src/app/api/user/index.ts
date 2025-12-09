@@ -25,7 +25,7 @@ export class UserService {
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async createUser(body: UserCreateModel, callback: FetchCallback<UserModel>) {
@@ -38,7 +38,7 @@ export class UserService {
       callback.onError(res?.message || 'Unknown Error');
     }
 
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async getUserById(id: string, callback: FetchCallback<UserUpdateModel>) {
@@ -51,7 +51,7 @@ export class UserService {
       callback.onError(res?.message || 'Unknown Error');
     }
 
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async updateUser(id: string, body: UserUpdateModel, callback: FetchCallback<UserUpdateModel>) {
@@ -64,7 +64,7 @@ export class UserService {
       callback.onError(res?.message || 'Unknown Error');
     }
 
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async deleteUser(id: string, callback: FetchCallback<void>) {

@@ -17,7 +17,7 @@ export class AuthService {
     if (!res?.status) {
       callback.onError(res?.message || 'Unknown Error');
     }
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async Logout(id: string, callback: FetchCallback<LoginResponseModel>) {
@@ -26,10 +26,9 @@ export class AuthService {
     if (res?.status) {
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('id_user');
         localStorage.removeItem('username');
         localStorage.removeItem('email');
-        localStorage.removeItem('id_user');
         localStorage.removeItem('role');
       }
       callback.onSuccess(res.data);

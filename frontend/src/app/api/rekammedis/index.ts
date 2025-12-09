@@ -24,7 +24,7 @@ class RekamMedisService {
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async getRekamMedisById(id: string, callback: FetchCallback<RekamMedisModel>) {
@@ -36,7 +36,7 @@ class RekamMedisService {
     } else {
       callback.onError(res?.message || 'Unknown Error');
     }
-    callback?.onFullfilled && callback.onFullfilled();
+    callback?.onFullfilled?.();
   }
 
   async createRekamMedis(callback: FetchCallback<RekamMedisModel>, data: RekamMedisCreateModel) {
