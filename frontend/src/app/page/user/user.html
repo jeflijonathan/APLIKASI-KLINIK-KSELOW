@@ -57,8 +57,6 @@
                   <th>USER</th>
                   <th>ROLE</th>
                   <th>STATUS</th>
-                  <th>LAST LOGIN</th>
-                  <th>CREATED</th>
                   <th>AKSI</th>
                 </tr>
               </thead>
@@ -93,8 +91,6 @@
                       {{ user.isActive ? 'Aktif' : 'Non-Aktif' }}
                     </span>
                   </td>
-                  <td>-</td>
-                  <td>{{ user.createdAt | date : 'dd/MM/yyyy' }}</td>
                   <td>
                     <div class="d-flex gap-2">
                       <button

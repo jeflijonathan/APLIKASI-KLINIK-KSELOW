@@ -10,7 +10,7 @@ import { Create } from './Create/create';
   selector: 'app-user',
   standalone: true,
 
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe, Update, Create],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, Update, Create],
   templateUrl: './user.html',
   styleUrls: ['./user.css'],
 })

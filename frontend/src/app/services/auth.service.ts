@@ -6,8 +6,9 @@ import { API } from '../api/service';
 })
 export class AuthService {
   constructor(private api: API) {}
-
+  
   isLoggedIn(): boolean {
+    const fetchUsers = 
     const token = localStorage.getItem('token');
     if (!token) return false;
 

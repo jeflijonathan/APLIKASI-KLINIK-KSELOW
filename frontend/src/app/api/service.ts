@@ -26,7 +26,6 @@ export class API {
     }
   }
 
-  // ⬅️ CEK LOGIN BERDASARKAN RESPONSE BUKAN REQUEST
   private handleResponseError(err: any) {
     if (err.status === 401) {
       console.warn('🔐 Token invalid/expired → Logging out');
@@ -36,12 +35,10 @@ export class API {
     return throwError(() => err.error || err);
   }
 
-  // ⬅️ WAIT RESPONSE → BARU SET LOGIN STATUS
   private async toPromise<T>(request: any): Promise<T> {
     return await firstValueFrom(
       request.pipe(catchError((err) => this.handleResponseError(err)))
     ).then((response: any) => {
-      // Jika response sukses → user dianggap login
       this.isLoggedIn.set(true);
       return response;
     });
@@ -80,8 +77,8 @@ export class API {
     return this.toPromise(req);
   }
 
-  // ⬅️ FUNCTION isLogin
   isLogIn(): boolean {
+    console.log('ini nilai login:', this.isLoggedIn());
     return this.isLoggedIn();
   }
 }
