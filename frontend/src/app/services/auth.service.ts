@@ -6,14 +6,14 @@ import { API } from '../api/service';
 })
 export class AuthService {
   constructor(private api: API) {}
-  
+
   isLoggedIn(): boolean {
-    const fetchUsers = 
-    const token = localStorage.getItem('token');
+    if (typeof window === 'undefined' || !window.localStorage) return false;
+    const token = window.localStorage.getItem('token');
     if (!token) return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split('.')[1] || ''));
 
       const now = Math.floor(Date.now() / 1000);
 
@@ -30,8 +30,9 @@ export class AuthService {
   }
 
   logout() {
-    console.log('🔐 Logout: clearing token and user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem('token');
+      window.localStorage.removeItem('user');
+    }
   }
 }

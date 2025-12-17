@@ -7,9 +7,8 @@ import { APIResponse } from '../common/type';
   providedIn: 'root',
 })
 export class API {
-  private baseURL = `http://localhost:3000/api`;
+  private baseURL = 'http://localhost:3000/api';
 
-  // ⬅️ STATUS LOGIN DINAMIS
   private isLoggedIn = signal<boolean>(false);
 
   private headers = new HttpHeaders({
@@ -17,10 +16,33 @@ export class API {
     'Content-Type': 'application/json',
   });
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.restoreAuth();
+  }
+
+  private isTokenValid(token: string | null): boolean {
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1] || ''));
+      const now = Math.floor(Date.now() / 1000);
+      return !!payload && typeof payload.exp === 'number' && payload.exp > now;
+    } catch {
+      return false;
+    }
+  }
+
+  private restoreAuth() {
+    const token = this.getToken();
+    if (token && this.isTokenValid(token)) {
+      this.isLoggedIn.set(true);
+      this.headers = this.headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      this.isLoggedIn.set(false);
+    }
+  }
 
   private updateTokenHeader() {
-    const token = localStorage.getItem('token');
+    const token = this.getToken();
     if (token) {
       this.headers = this.headers.set('Authorization', `Bearer ${token}`);
     }
@@ -30,9 +52,20 @@ export class API {
     if (err.status === 401) {
       console.warn('🔐 Token invalid/expired → Logging out');
       this.isLoggedIn.set(false);
-      localStorage.removeItem('token');
+      if (this.hasLocalStorage()) {
+        localStorage.removeItem('token');
+      }
     }
     return throwError(() => err.error || err);
+  }
+
+  private hasLocalStorage(): boolean {
+    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+  }
+
+  private getToken(): string | null {
+    if (!this.hasLocalStorage()) return null;
+    return window.localStorage.getItem('token');
   }
 
   private async toPromise<T>(request: any): Promise<T> {
@@ -78,7 +111,6 @@ export class API {
   }
 
   isLogIn(): boolean {
-    console.log('ini nilai login:', this.isLoggedIn());
     return this.isLoggedIn();
   }
 }
