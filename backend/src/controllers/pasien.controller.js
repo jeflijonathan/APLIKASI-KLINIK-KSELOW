@@ -155,10 +155,12 @@ class PasienController {
       });
     }
   }
+
   static async updatePasien(req, res) {
     try {
       const { id } = req.params;
-      const { nama, tanggal_lahir, jenis_kelamin, asuransi } = req.body;
+      const { nama, tanggal_lahir, jenis_kelamin, asuransi, isActive } =
+        req.body;
       const updateData = {};
       let errorDetails = [];
 
@@ -184,6 +186,9 @@ class PasienController {
         updateData.asuransi = asuransi;
       } else if (asuransi === "") {
         errorDetails.push("asuransi tidak boleh kosong");
+      }
+      if (isActive !== undefined) {
+        updateData.isActive = isActive;
       }
 
       if (errorDetails.length > 0) {
@@ -240,7 +245,9 @@ class PasienController {
 
   static async getPasienOptions(req, res) {
     try {
-      const data = await pasienSchema.find({}).select({ _id: 1, nama: 1 });
+      const data = await pasienSchema
+        .find({ isActive: true })
+        .select({ _id: 1, nama: 1 });
       res.status(200).json({
         status: true,
         statusCode: 200,

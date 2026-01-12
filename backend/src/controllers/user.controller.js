@@ -110,6 +110,14 @@ class UserController {
           .status(200)
           .json({ status: false, statusCode: 200, message: "User not found" });
 
+      // Check if user is active
+      if (!user.isActive)
+        return res.status(200).json({
+          status: false,
+          statusCode: 200,
+          message: "Akun Anda tidak aktif. Silakan hubungi administrator.",
+        });
+
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword)
         return res.status(200).json({
