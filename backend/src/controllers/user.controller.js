@@ -110,7 +110,6 @@ class UserController {
           .status(200)
           .json({ status: false, statusCode: 200, message: "User not found" });
 
-      // Check if user is active
       if (!user.isActive)
         return res.status(200).json({
           status: false,
